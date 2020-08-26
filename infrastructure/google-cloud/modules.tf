@@ -12,10 +12,7 @@ module "cluster" {
 module "provision" {
     source = "./provision"
 
-    host = module.cluster.host
-
-    client_certificate     = module.cluster.client_certificate
-    client_key             = module.cluster.client_key
+    host                   = module.cluster.host
     cluster_ca_certificate = module.cluster.cluster_ca_certificate
 }
 
@@ -26,6 +23,5 @@ module "domain" {
     region  = var.gke_region
 
     load_balancer_ip = module.provision.load_balancer_ip
-
-    domain = var.domain_name
+    domain           = var.domain_name
 }

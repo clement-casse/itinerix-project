@@ -22,6 +22,15 @@ resource "kubernetes_namespace" "prometheus_operator_ns" {
   }
 }
 
+resource "kubernetes_namespace" "linkerd_ns" {
+  metadata {
+    name = "linkerd"
+    labels = {
+      istio-injection = "disabled"
+    }
+  }
+}
+
 data "kubectl_file_documents" "strimzi_operator_manifests" {
   content = file("./provision/generated-manifests/strimzi-operator.yaml")
 }
@@ -60,6 +69,8 @@ data "kubectl_file_documents" "linkerd_config_manifests" {
 resource "kubectl_manifest" "linkerd_config" {
   count     = length(data.kubectl_file_documents.linkerd_config_manifests.documents)
   yaml_body = element(data.kubectl_file_documents.linkerd_config_manifests.documents, count.index)
+
+  depends_on = [kubernetes_namespace.linkerd_ns]
 }
 
 data "kubectl_file_documents" "linkerd_controlplane_manifests" {
