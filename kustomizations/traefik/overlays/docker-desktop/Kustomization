@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+patchesStrategicMerge:
+- traefik-otel-agent.yaml
+
+bases:
+- ../../base
+
+images:
+- name: jaegertracing/jaeger-agent
+  newName: jaegertracing/jaeger-opentelemetry-agent
+  newTag: latest

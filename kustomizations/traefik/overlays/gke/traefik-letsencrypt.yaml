@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: init-acme
+        ## This container just create a /tmp/acme.json file and provides it the mode required by trafik
+        image: busybox
+        volumeMounts:
+        - mountPath: /tmp/
+          name: acme-storage
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          if [ ! -f "/tmp/acme.json" ]; then
+            echo '{}' > /tmp/acme.json;
+            chmod 0600 /tmp/acme.json;
+          fi;
+          ls -hAlFR /tmp/
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 65532
+          runAsGroup: 65532
+      containers:
+      - name: traefik
+        env:
+        - name: ACME_EMAIL
+          valueFrom:
+            secretKeyRef:
+              key: ACME_EMAIL
+              name: traefik-acme
+        volumeMounts:
+        - mountPath: /tmp/acme.json
+          name: acme-storage
+          subPath: acme.json
+        # Why Can't you merge array as you have the deleteFromPrimitiveList ...
+        args: [
+          --api.dashboard,
+          --log.level=INFO,
+          # --accessLog,
+          --entrypoints.http.address=:8000,
+          --entrypoints.https.address=:4443,
+          --entrypoints.https.http.tls.certResolver=default,
+          --entrypoints.traefik-internal.address=:9000,
+          --entrypoints.http-bolt.address=:7687,
+          --ping.entrypoint=traefik-internal,
+          --metrics.prometheus.entrypoint=traefik-internal,
+          --providers.kubernetescrd,
+          --tracing.jaeger=true,
+          --tracing.jaeger.localAgentHostPort=127.0.0.1:6831,
+          --certificatesresolvers.default.acme.tlschallenge,
+          --certificatesresolvers.default.acme.email=$(ACME_EMAIL),
+          --certificatesresolvers.default.acme.storage=/tmp/acme.json,
+          --certificatesresolvers.default.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+        ]
+      volumes:
+      - name: acme-storage
+        emptyDir: {}

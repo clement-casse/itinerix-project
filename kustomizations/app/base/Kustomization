@@ -1,0 +1,62 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: app
+
+commonLabels:
+  experimentation: microservices-demo
+
+resources:
+- ./microservices-demo/kubernetes-manifests/adservice.yaml
+- ./microservices-demo/kubernetes-manifests/cartservice.yaml
+- ./microservices-demo/kubernetes-manifests/checkoutservice.yaml
+- ./microservices-demo/kubernetes-manifests/currencyservice.yaml
+- ./microservices-demo/kubernetes-manifests/emailservice.yaml
+- ./microservices-demo/kubernetes-manifests/frontend.yaml
+- ./microservices-demo/kubernetes-manifests/loadgenerator.yaml
+- ./microservices-demo/kubernetes-manifests/paymentservice.yaml
+- ./microservices-demo/kubernetes-manifests/productcatalogservice.yaml
+- ./microservices-demo/kubernetes-manifests/recommendationservice.yaml
+- ./microservices-demo/kubernetes-manifests/redis.yaml
+- ./microservices-demo/kubernetes-manifests/shippingservice.yaml
+- ./ingress-route.yaml
+
+patchesStrategicMerge:
+- reference-jaeger-agent.yaml
+- remove-loadbalancer.yaml
+- tune-loadgenerator.yaml
+
+images:
+- name: emailservice
+  newName: gcr.io/google-samples/microservices-demo/emailservice
+  newTag: v0.2.0
+- name: checkoutservice
+  newName: gcr.io/google-samples/microservices-demo/checkoutservice
+  newTag: v0.2.0
+- name: recommendationservice
+  newName: gcr.io/google-samples/microservices-demo/recommendationservice
+  newTag: v0.2.0
+- name: frontend
+  newName: gcr.io/google-samples/microservices-demo/frontend
+  newTag: v0.2.0
+- name: paymentservice
+  newName: gcr.io/google-samples/microservices-demo/paymentservice
+  newTag: v0.2.0
+- name: productcatalogservice
+  newName: gcr.io/google-samples/microservices-demo/productcatalogservice
+  newTag: v0.2.0
+- name: cartservice
+  newName: gcr.io/google-samples/microservices-demo/cartservice
+  newTag: v0.2.0
+- name: currencyservice
+  newName: gcr.io/google-samples/microservices-demo/currencyservice
+  newTag: v0.2.0
+- name: shippingservice
+  newName: gcr.io/google-samples/microservices-demo/shippingservice
+  newTag: v0.2.0
+- name: adservice
+  newName: gcr.io/google-samples/microservices-demo/adservice
+  newTag: v0.2.0
+- name: loadgenerator
+  newName: gcr.io/google-samples/microservices-demo/loadgenerator
+  newTag: v0.2.0

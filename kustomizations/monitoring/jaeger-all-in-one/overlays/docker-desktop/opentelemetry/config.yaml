@@ -1,0 +1,3 @@
+extensions:
+  health_check:
+    port: 14269

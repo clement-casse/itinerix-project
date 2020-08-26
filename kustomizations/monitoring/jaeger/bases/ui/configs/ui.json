@@ -1,0 +1,16 @@
+{
+    "dependencies": {
+        "menuEnabled": false
+    },
+    "menu": [
+        {
+            "label": "About",
+            "items": [
+                {
+                    "label": "Documentation",
+                    "url": "https://www.jaegertracing.io/docs/1.18"
+                }
+            ]
+        }
+    ]
+}

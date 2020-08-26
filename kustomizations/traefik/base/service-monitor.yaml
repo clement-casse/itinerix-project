@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: traefik
+  labels:
+    component: traefik
+spec:
+  selector:
+    matchLabels:
+      prometheus: main
+  endpoints:
+  - interval: 30s
+    port: traefik
+    path: /metrics

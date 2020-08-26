@@ -1,0 +1,27 @@
+receivers:
+  jaeger:
+    protocols:
+      grpc:
+      thrift_binary:
+      thrift_compact:
+      thrift_http:
+  opencensus:
+
+processors:
+  batch:
+    timeout: 5s
+    send_batch_size: 128
+
+exporters:
+  jaeger:
+    endpoint: jaeger-collector.monitoring.svc.cluster.local:14250
+
+service:
+  pipelines:
+    traces:
+      receivers: [jaeger, opencensus]
+      processors: [batch]
+      exporters: [jaeger]
+    metrics:
+      receivers: [opencensus]
+      #exporters: [exampleexporter]

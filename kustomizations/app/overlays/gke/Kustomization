@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+
+bases:
+- ../../base/
+
+patchesStrategicMerge:
+- apply-middleware-ingress-route.yaml
+- manually-inject-jaeger-agent.yaml
+
+resources:
+- l5d-middleware.yaml

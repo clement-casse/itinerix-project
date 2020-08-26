@@ -1,0 +1,15 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gremlinserver-neo4j-bolt
+spec:
+  entryPoints:
+  - http-bolt
+  routes:
+  - kind: Rule
+    match: Host(`*`)
+    services:
+    - name: gremlinserver-neo4j
+      port: 7687
+    middlewares: []
+    #- name: gremlinserver-auth

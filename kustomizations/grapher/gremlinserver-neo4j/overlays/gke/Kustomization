@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+bases:
+- ../../base
+
+configMapGenerator:
+- name: gremlinserver-config-files
+  behavior: merge
+  files:
+  - gremlinserver/neo4j.properties
+
+secretGenerator:
+- name: htpasswd-gremlinserver
+  behavior: replace
+  files:
+  - gremlinserver/users

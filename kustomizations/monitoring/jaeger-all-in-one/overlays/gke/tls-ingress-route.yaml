@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jaeger-query
+spec:
+  entryPoints:
+  - http
+  - https
+  routes:
+  - kind: Rule
+    match: Host(`monitoring.itinerix-project.net`) && PathPrefix(`/jaeger/`)
+    services:
+    - name: jaeger-query
+      kind: Service
+      port: 16686
+    middlewares:
+    - name: jaeger-auth
+  tls:
+    certResolver: default

@@ -1,0 +1,7 @@
+# Traefik service is created by terraform with the reference of the public ip
+
+$patch: delete
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik

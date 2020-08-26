@@ -1,0 +1,17 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: polynote
+spec:
+  entryPoints:
+  - http
+  - https
+  routes:
+  - kind: Rule
+    match: PathPrefix(`/polynote/`)
+    services:
+    - name: polynote
+      port: 8192
+    middlewares:
+    - name: polynote-auth
+    - name: polynote-strip-prefix

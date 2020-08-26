@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector-headless
+  labels:
+    component: jaeger
+    app.kubernetes.io/component: service-collector
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/name: jaeger-collector
+    app.kubernetes.io/part-of: jaeger
+  annotations:
+    prometheus.io/scrape: "false"
+spec:
+  clusterIP: None
+  selector:
+    component: jaeger
+    app.kubernetes.io/component: collector
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/name: jaeger-collector
+    app.kubernetes.io/part-of: jaeger
+  ports:
+  - name: http-zipkin
+    port: 9411
+    targetPort: 0
+  - name: http-grpc
+    port: 14250
+    targetPort: 0
+  - name: c-tchan-trft
+    port: 14267
+    targetPort: 0
+  - name: http-c-binary-trft
+    port: 14268
+    targetPort: 0
+status:
+  loadBalancer: {}

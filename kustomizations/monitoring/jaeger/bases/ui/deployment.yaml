@@ -1,0 +1,102 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-query
+  labels:
+    component: jaeger
+    app.kubernetes.io/component: query
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/name: jaeger-query
+    app.kubernetes.io/part-of: jaeger
+  annotations:
+    linkerd.io/inject: disabled
+    prometheus.io/port: "16687"
+    prometheus.io/scrape: "true"
+    sidecar.istio.io/inject: "false"
+spec:
+  selector:
+    matchLabels:
+      component: jaeger
+      app.kubernetes.io/component: query
+      app.kubernetes.io/instance: jaeger
+      app.kubernetes.io/name: jaeger-query
+      app.kubernetes.io/part-of: jaeger
+  template:
+    metadata:
+      labels:
+        component: jaeger
+        app.kubernetes.io/component: query
+        app.kubernetes.io/instance: jaeger
+        app.kubernetes.io/name: jaeger-query
+        app.kubernetes.io/part-of: jaeger
+      annotations:
+        linkerd.io/inject: disabled
+        prometheus.io/port: "16687"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      serviceAccountName: jaeger
+      containers:
+      - name: jaeger-query
+        image: jaegertracing/jaeger-query:1.18
+        ports:
+        - containerPort: 16686
+          name: query
+        - containerPort: 16687
+          name: admin-http
+        env:
+        - name: SPAN_STORAGE_TYPE
+          value: elasticsearch
+        - name: JAEGER_SERVICE_NAME
+          value: jaeger.default
+        - name: JAEGER_PROPAGATION
+          value: jaeger,b3
+        - name: QUERY_HOST_PORT
+          value: :16686
+        - name: QUERY_BASE_PATH
+          value: /jaeger
+        - name: QUERY_UI_CONFIG
+          value: /etc/config/ui.json
+        envFrom:
+        - secretRef:
+            name: elasticsearch-auth
+        volumeMounts:
+        - mountPath: /etc/config/ui.json
+          name: jaeger-ui-configuration-volume
+          subPath: ui.json
+          readOnly: true
+        args: [
+          --es.server-urls=http://$(ELASTICSEARCH_SVC):9200,
+        ]
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 16687
+          initialDelaySeconds: 5
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 16687
+          initialDelaySeconds: 1
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          #readOnlyRootFilesystem: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+      volumes:
+      - name: jaeger-ui-configuration-volume
+        configMap:
+          name: jaeger-ui-config
+        

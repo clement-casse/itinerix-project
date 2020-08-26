@@ -1,0 +1,22 @@
+---
+# $patch: remove
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: jaeger-agent
+
+
+---
+$patch: delete
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-collector
+
+
+---
+$patch: delete
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-query

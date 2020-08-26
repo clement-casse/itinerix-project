@@ -1,0 +1,18 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard
+spec:
+  entryPoints:
+  - http
+  - https
+  routes:
+  - kind: Rule
+    match: Host(`monitoring.itinerix-project.net`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+    services:
+    - name: api@internal
+      kind: TraefikService
+    middlewares:
+    - name: traefik-dashboard-auth
+  tls:
+    certResolver: default

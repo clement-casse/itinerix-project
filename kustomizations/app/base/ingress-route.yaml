@@ -1,0 +1,16 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: microserives-demo-frontend
+spec:
+  entryPoints:
+  - http
+  - https
+  routes:
+  - kind: Rule
+    match: PathPrefix(`/`)
+    services:
+    - name: frontend
+      kind: Service
+      port: 80
+    middlewares: []

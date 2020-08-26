@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+configMapGenerator:
+- name: jaeger-ui-config
+  files:
+  - configs/ui.json
+
+secretGenerator:
+- name: elasticsearch-auth
+  literals:
+  - ES_USERNAME=elastic
+  - ES_PASSWORD=ErmagherdW4tAp455w0rd!
+
+resources:
+- deployment.yaml
+- service.yaml
+- ingress-route.yaml

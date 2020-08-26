@@ -1,0 +1,8 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: jaeger-auth
+spec:
+  basicAuth:
+    secret: traefik-htpasswd-jaeger

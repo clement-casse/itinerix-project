@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polynote
+spec:
+  template:
+    spec:
+      containers:
+      - name: polynote
+        volumeMounts:
+        - mountPath: /opt/polynote/reference-notebooks/JaegerTracesIngest.ipynb
+          name: polynote-reference-notebooks-volume
+          subPath: JaegerTracesIngest.ipynb
+        - mountPath: /opt/polynote/reference-notebooks/GremlinServerBoltConnection.ipynb
+          name: polynote-reference-notebooks-volume
+          subPath: GremlinServerBoltConnection.ipynb
+        - mountPath: /opt/polynote/reference-notebooks/GremlinServerConnection.ipynb
+          name: polynote-reference-notebooks-volume
+          subPath: GremlinServerConnection.ipynb
+      volumes:
+      - name: polynote-reference-notebooks-volume
+        configMap:
+          name: polynote-reference-notebooks
+          defaultMode: 0440

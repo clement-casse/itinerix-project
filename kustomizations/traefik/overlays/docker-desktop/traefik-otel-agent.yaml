@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik
+spec:
+  template:
+    spec:
+      containers:
+      - name: jaeger-agent
+        ports:
+        - containerPort: 14250
+          name: grpc-traces
+          protocol: TCP
+        - $patch: delete
+          name: http-admin-agent
+        env:
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        args: [
+          --log-level=DEBUG,
+          --http-server.host-port=:5778,
+          --collector.grpc-server.host-port=:14250,
+          --processor.jaeger-binary.server-host-port=:6832,
+          --processor.jaeger-compact.server-host-port=:6831,
+          --reporter.grpc.host-port=dns:///jaeger-collector-headless:14250,
+          --resource.labels=hostIP=$(HOST_IP)
+        ]

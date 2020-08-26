@@ -1,0 +1,162 @@
+########## Server-level Configuration ################################
+###
+### These configurations are applied immediately when Polynote starts.
+###
+######################################################################
+
+###############################################################################
+# The host and port can be set by uncommenting and editing the following lines.
+###############################################################################
+
+listen:
+  host: 0.0.0.0
+  port: 8192
+
+
+############################################################################################
+# Storage-related configuration. Locations are all relative to Polynote's working directory.
+############################################################################################
+
+storage:
+  # The base directory Polynote should use when looking for notebooks. This location can be absolute or
+  # relative to Polynote's working directory.
+  dir: /opt/notebooks
+  # These are additional mount points. Folders specified here will be 'mounted' into the base directory
+  # and visible by their keys - so `foo: dir: bar` will show a folder `foo` in the UI that shows the contents of the
+  # file system under `bar/`
+  mounts:
+    examples:
+      dir: examples
+    reference:
+      dir: reference-notebooks
+  #   team_notebooks:
+  #     dir: /shared/notebooks
+  # The location Polynote puts various caches, such as virtual environments created for your notebooks.
+  cache: tmp
+
+##########################################################
+# Configure the way Polynote runs Kernels and Interpreters
+##########################################################
+
+#behavior:
+#  dependency_isolation: false
+#  kernel_isolation: always
+#  shared_packages:
+#    - com.esoteric.kryo
+
+########## Notebook Creation Configuration #######################################################
+###
+### These configurations are applied to *new notebooks* only.
+### When a *new notebook* is created, its Notebook Configuration is copied from this configuration.
+### They do *not* affect existing notebooks.
+###
+###################################################################################################
+
+############################################################################################
+# Default repositories. Uncommenting the following lines would add four default repositories
+# which are inherited by new notebooks.
+############################################################################################
+
+repositories:
+- maven:
+  base: http://central.maven.org/maven2/
+- maven:
+  base: http://oss.sonatype.org/content/repositories/snapshots
+  changing: true
+
+############################################################################################
+# Default dependencies. Uncommenting the following lines would add some default dependencies
+# which are inherited by new notebooks.
+############################################################################################
+
+# dependencies:
+#   scala:
+#     # - org.typelevel:cats-core_2.11:1.6.0
+#     # - com.mycompany:my-library:jar:all:1.0.0
+#     - com.michaelpollmeier:gremlin-scala_2.12:3.4.7.1
+#     - org.apache.tinkerpop:tinkergraph-gremlin:3.4.7
+#   python:
+#     - requests
+#     - urllib3==1.25.3
+
+########################################################################################
+# Default exclusions. Uncommenting the following lines would add some default exclusions
+# which are inherited by new notebooks.
+########################################################################################
+
+#exclusions:
+#  - com.google.guava:guava  # spark, update your guava already!!!
+
+########## Notebook Runtime Configuration #########################################################################
+###
+### These configurations are applied to *all notebooks*.
+### When a *new notebook* is created, its Notebook Configuration is copied from this configuration.
+###
+### When an existing notebook is *run*, these configurations are applied at runtime. Values present in the Notebook
+### Configuration take precedence over values here. The Notebook Configuration is *not* modified.
+###
+### **Note** that this means they can affect reproducibility of your notebooks when you share them with others!
+###
+###################################################################################################################
+
+###################################################################################################################
+# Spark config params can be set by uncommenting and editing the following lines.
+# To add additional spark configuration properties, add them as keys under `properties`.
+# To set additional arguments to `spark-submit`, you can use the `spark_submit_args` property.
+#
+# By default, not all jars in SPARK_DIST_CLASSPATH are available to the Polynote compiler (i.e., to user-code
+# inside cells). To use these jars (for example, if you want to use Hadoop APIs in your notebook without adding
+# a Hadoop dependency), set the `dist_classpath_filter` to a valid regular expression that selects which JARs
+# you want to use (there can be a huge number of JARs in SPARK_DIST_CLASSPATH, so it would be burdensome to
+# include all of them by default.)
+#
+#################################################################################
+
+# spark:
+#   properties:
+#     spark.driver.memory: 2g
+#     spark.driver.userClasspathFirst: true
+#     spark.executor.memory: 4g
+#     spark.executor.userClasspathFirst: true
+#     spark.kubernetes.namespace: casse-poc
+#     spark.kubernetes.container.image: ""
+#     spark.kubernetes.authenticate.driver.serviceAccountName: spark
+#     spark.kubernetes.driver.label.app : "casse-poc"
+#     spark.kubernetes.driver.request.cores: "500m"
+#     spark.kubernetes.driver.limit.cores: "4000m"
+#     spark.kubernetes.executor.label.app : "casse-poc"
+#     spark.kubernetes.executor.request.cores: "1000m"
+#     spark.kubernetes.executor.limit.cores: "4000m"
+#   spark_submit_args: >-
+#     --master "k8s://https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT_HTTPS}"
+#     --deploy-mode "cluster"
+#  dist_classpath_filter: hadoop.*\.jar
+
+
+########## Front-end Configuration ################################################################################
+###
+### These configurations affect the behavior of the front-end. You can modify the behavior by uncommenting the
+### following lines and editing the properties.
+###
+###################################################################################################################
+
+ui:
+  # The URI relative to the server host where Polynote is mounted. You can edit this if mounting Polynote at a
+  # different location behind a reverse proxy. This value is placed in the <base> tag.
+  base_uri: /polynote/
+  #base_uri: /
+
+############################################################################################
+# Credentials. This list contains the list of credentials used to access the repositories
+############################################################################################
+
+#credentials:
+#  coursier:
+#    path: ~/.config/coursier/credentials.properties
+
+#############################################################################################################
+# Environment variables. This map gets merged with the notebook config's environment variable map at runtime.
+#############################################################################################################
+
+#env:
+#  foo: bar

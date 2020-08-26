@@ -1,0 +1,29 @@
+apiVersion: skaffold/v2beta5
+kind: Config
+metadata:
+  name: itinerix-project
+
+build:
+  artifacts:
+  - image: razalgethi/gremlinserver-neo4j
+    context: ../images/gremlinserver-neo4j/gremlin-3.4
+  tagPolicy:
+    sha256: {}
+
+profiles:
+- name: docker-desktop
+  build:
+    local:
+      push: false
+      useDockerCLI: false
+      useBuildkit: false
+  deploy:
+    kubeContext: docker-desktop
+    statusCheckDeadlineSeconds: 300
+    kustomize:
+      paths:
+      #- traefik/overlays/docker-desktop
+      - monitoring/jaeger-all-in-one/overlays/docker-desktop
+      - grapher/polynote/overlays/docker-desktop
+      - grapher/gremlinserver-neo4j/overlays/docker-desktop
+      - app/overlays/docker-desktop

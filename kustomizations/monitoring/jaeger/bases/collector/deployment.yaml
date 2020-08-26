@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-collector
+  annotations:
+    linkerd.io/inject: disabled
+    prometheus.io/port: "14269"
+    prometheus.io/scrape: "true"
+    sidecar.istio.io/inject: "false"
+  labels:
+    component: jaeger
+    app.kubernetes.io/component: collector
+    app.kubernetes.io/instance: jaeger
+    app.kubernetes.io/name: jaeger-collector
+    app.kubernetes.io/part-of: jaeger
+spec:
+  selector:
+    matchLabels:
+      component: jaeger
+      app.kubernetes.io/component: collector
+      app.kubernetes.io/instance: jaeger
+      app.kubernetes.io/name: jaeger-collector
+      app.kubernetes.io/part-of: jaeger
+  template:
+    metadata:
+      labels:
+        component: jaeger
+        app.kubernetes.io/component: collector
+        app.kubernetes.io/instance: jaeger
+        app.kubernetes.io/name: jaeger-collector
+        app.kubernetes.io/part-of: jaeger
+    spec:
+      serviceAccountName: jaeger
+      securityContext:
+        fsGroup: 65532
+      containers:
+      - name: jaeger-collector
+        image: jaegertracing/jaeger-collector:1.18
+        ports:
+        - containerPort: 9411
+          name: zipkin
+        - containerPort: 14267
+          name: c-tchan-trft
+        - containerPort: 14268
+          name: c-binary-trft
+        - containerPort: 14269
+          name: admin-http
+        - containerPort: 14250
+          name: grpc
+        volumeMounts:
+        - mountPath: /etc/jaeger/sampling/sampling.json
+          name: jaeger-sampling-configuration-volume
+          subPath: sampling.json
+          readOnly: true
+        env:
+        - name: SPAN_STORAGE_TYPE
+          value: kafka
+        - name: COLLECTOR_ZIPKIN_HTTP_PORT
+          value: "9411"
+        - name: SAMPLING_STRATEGIES_FILE
+          value: /etc/jaeger/sampling/sampling.json
+        envFrom:
+        - secretRef:
+            name: elasticsearch-auth
+        args: [
+          --kafka.producer.brokers=$(KAFKA_BOOTSTRAP_SVC):9092,
+          #--kafka.producer.encoding=json,
+          --kafka.producer.topic=jaeger-spans,
+        ]
+        livenessProbe:
+          failureThreshold: 5
+          httpGet:
+            path: /
+            port: 14269
+          initialDelaySeconds: 5
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 14269
+          initialDelaySeconds: 1
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          #readOnlyRootFilesystem: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+      volumes:
+      - name: jaeger-sampling-configuration-volume
+        configMap:
+          name: jaeger-sampling-config

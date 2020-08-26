@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+configMapGenerator:
+- name: jaeger-opentelemetry-config
+  namespace: monitoring
+  files:
+  - opentelemetry/config.yaml
+
+bases:
+- ../../base
+
+patchesStrategicMerge:
+- jaeger-all-in-one-opentelemetry.yaml
+
+images:
+- name: jaegertracing/all-in-one
+  newName: jaegertracing/opentelemetry-all-in-one
+  newTag: latest
+- name: jaegertracing/jaeger-collector
+  newName: jaegertracing/jaeger-opentelemetry-collector
+  newTag: latest
+- name: jaegertracing/jaeger-ingester
+  newName: jaegertracing/jaeger-opentelemetry-ingester
+  newTag: latest
+- name: jaegertracing/jaeger-agent
+  newName: jaegertracing/jaeger-agent
+  newTag: latest

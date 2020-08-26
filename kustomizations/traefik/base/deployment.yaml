@@ -1,0 +1,116 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: traefik
+  labels:
+    component: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: traefik
+  template:
+    metadata:
+      labels:
+        component: traefik
+    spec:
+      serviceAccountName: traefik
+      securityContext:
+        fsGroup: 65532
+      containers:
+      - name: traefik
+        image: traefik:v2.2
+        ports:
+        - containerPort: 8000
+          name: http
+        - containerPort: 4443
+          name: https
+        - containerPort: 9000
+          name: traefik
+        - containerPort: 7687
+          name: http-bolt
+        env:
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        args: [
+          --api.dashboard,
+          --log.level=INFO,
+          --accessLog,
+          --entrypoints.http.address=:8000,
+          --entrypoints.https.address=:4443,
+          --entrypoints.traefik-internal.address=:9000,
+          --entrypoints.http-bolt.address=:7687,
+          --ping.entrypoint=traefik-internal,
+          --metrics.prometheus.entrypoint=traefik-internal,
+          --providers.kubernetescrd.namespaces=$(POD_NAMESPACE),
+          --tracing.jaeger=true,
+          --tracing.jaeger.localAgentHostPort=127.0.0.1:6831,
+        ]
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+          failureThreshold: 1
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: traefik
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 200m
+            memory: 200Mi
+      - name: jaeger-agent
+        image: jaegertracing/jaeger-agent:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5778
+          name: http-config-ag
+          protocol: TCP
+        - containerPort: 6831
+          name: jg-compact-trft
+          protocol: UDP
+        - containerPort: 6832
+          name: jg-binary-trft
+          protocol: UDP
+        - containerPort: 14271
+          name: http-admin-ag
+          protocol: TCP
+        args: [
+          --admin.http.host-port=:14271,
+          --http-server.host-port=:5778,
+          --processor.jaeger-binary.server-host-port=:6832,
+          --processor.jaeger-compact.server-host-port=:6831,
+          --reporter.grpc.host-port=dns:///jaeger-collector-headless:14250,
+        ]
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 5m
+            memory: 10Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
