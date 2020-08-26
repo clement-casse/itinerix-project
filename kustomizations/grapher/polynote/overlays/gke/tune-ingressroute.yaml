@@ -13,18 +13,5 @@ spec:
     middlewares:
     - name: polynote-auth
     - name: polynote-strip-prefix
-
-
----
-apiVersion: traefik.containo.us/v1alpha1
-kind: IngressRoute
-metadata:
-  name: gremlinserver-neo4j-bolt
-spec:
-  routes:
-  - kind: Rule
-    match: Host(`grapher.itinerix-project.net`)
-    services:
-    - name: gremlinserver-neo4j
-      port: 7687
-    middlewares: []
+  tls:
+    certResolver: default

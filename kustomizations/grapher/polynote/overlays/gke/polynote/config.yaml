@@ -59,10 +59,10 @@ storage:
 
 repositories:
 - maven:
-  base: http://central.maven.org/maven2/
+    base: http://central.maven.org/maven2/
 - maven:
-  base: http://oss.sonatype.org/content/repositories/snapshots
-  changing: true
+    base: http://oss.sonatype.org/content/repositories/snapshots
+    changing: true
 
 ############################################################################################
 # Default dependencies. Uncommenting the following lines would add some default dependencies

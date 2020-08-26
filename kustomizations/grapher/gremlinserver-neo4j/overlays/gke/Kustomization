@@ -15,3 +15,6 @@ secretGenerator:
   behavior: replace
   files:
   - gremlinserver/users
+
+patchesStrategicMerge:
+- tune-ingressroute.yaml

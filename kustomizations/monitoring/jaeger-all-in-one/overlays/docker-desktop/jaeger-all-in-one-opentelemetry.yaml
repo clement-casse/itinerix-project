@@ -13,7 +13,6 @@ spec:
           subPath: config.yaml
           readOnly: true
         args: [
-          --log-level=debug,
           --config=/etc/jaeger/otel/config.yaml,
         ]
       volumes:

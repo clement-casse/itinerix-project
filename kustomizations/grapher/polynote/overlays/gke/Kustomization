@@ -10,6 +10,7 @@ configMapGenerator:
   files:
   - polynote/config.yaml
 - name: polynote-reference-notebooks
+  namespace: grapher
   files:
   - polynote/notebooks/JaegerTracesIngest.ipynb
   - polynote/notebooks/GremlinServerBoltConnection.ipynb
@@ -24,3 +25,4 @@ secretGenerator:
 
 patchesStrategicMerge:
 - polynote-add-ref-notebooks.yaml
+- tune-ingressroute.yaml
