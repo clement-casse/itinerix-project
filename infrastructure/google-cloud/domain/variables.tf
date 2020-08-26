@@ -12,3 +12,9 @@ variable "load_balancer_ip" {
   description = "IP address to be bound to the domains"
   type        = string
 }
+
+variable "domain" {
+  description = "Domain name of the root zone"
+  type        = string
+}
+

@@ -26,4 +26,6 @@ module "domain" {
     region  = var.gke_region
 
     load_balancer_ip = module.provision.load_balancer_ip
+
+    domain = var.domain_name
 }

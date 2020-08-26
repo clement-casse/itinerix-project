@@ -19,3 +19,8 @@ variable "gke_zone_pool_2" {
     description = "The zone in which to create the second Kubernetes cluster. Must match the region"
     type        = string
 }
+
+variable "domain_name" {
+  description = "Domain name of the root zone"
+  type        = string
+}

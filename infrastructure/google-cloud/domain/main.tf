@@ -1,7 +1,7 @@
 
 resource "google_dns_managed_zone" "main_zone" {
   name        = "main-zone"
-  dns_name    = "itinerix-project.net."
+  dns_name    = "${var.domain}."
   description = "Main DNS zone for itinerix project"
 }
 
