@@ -12,7 +12,7 @@ RUN set -eux; \
 
 COPY ./conf /opt/gremlin-server/conf
 
-EXPOSE 8182 7867
+EXPOSE 8182 7687
 
 VOLUME [ "/opt/gremlin-server/data/neo4j" ]
 
