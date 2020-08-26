@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: strimzi-cluster-operator
+spec:
+  template:
+    spec:
+      containers:
+      - name: strimzi-cluster-operator
+        env:
+        - $patch: replace 
+          name: STRIMZI_NAMESPACE
+          value: '*'
