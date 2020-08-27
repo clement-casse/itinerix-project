@@ -25,5 +25,5 @@ spec:
           --processor.jaeger-binary.server-host-port=:6832,
           --processor.jaeger-compact.server-host-port=:6831,
           --reporter.grpc.host-port=dns:///jaeger-collector-headless:14250,
-          --resource.labels=hostIP=$(HOST_IP)
+          --resource.attributes=hostIP=$(HOST_IP)
         ]

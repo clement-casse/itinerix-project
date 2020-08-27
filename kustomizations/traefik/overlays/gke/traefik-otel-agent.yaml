@@ -49,5 +49,5 @@ spec:
           --processor.jaeger-binary.server-host-port=:6832,
           --processor.jaeger-compact.server-host-port=:6831,
           --reporter.grpc.host-port=dns:///jaeger-collector-headless.monitoring.svc.cluster.local:14250,
-          "--resource.labels=service.instance.id=$(K8S_POD_NAME),k8s.pod.name=$(K8S_POD_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.ip=$(K8S_POD_IP),k8s.cluster.name=$(K8S_CLUSTER_NAME),host.name=$(HOST_NAME),host.ip=$(HOST_IP),cloud.provider=gcp,cloud.region=europe-west1"
+          "--resource.attributes=service.instance.id=$(K8S_POD_NAME),k8s.pod.name=$(K8S_POD_NAME),k8s.pod.uid=$(K8S_POD_UID),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.pod.ip=$(K8S_POD_IP),k8s.cluster.name=$(K8S_CLUSTER_NAME),host.name=$(HOST_NAME),host.ip=$(HOST_IP),cloud.provider=gcp,cloud.region=europe-west1"
         ]
