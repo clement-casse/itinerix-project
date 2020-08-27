@@ -18,6 +18,7 @@ secretGenerator:
 
 
 patchesStrategicMerge:
+- remove-traefik-svc.yaml
 - traefik-otel-agent.yaml
 - traefik-letsencrypt.yaml
 - tls-ingress-route.yaml

@@ -27,3 +27,17 @@ profiles:
       - grapher/polynote/overlays/docker-desktop
       - grapher/gremlinserver-neo4j/overlays/docker-desktop
       - app/overlays/docker-desktop
+
+- name: gke
+  deploy:
+    kubeContext: gke_itinerix-v2_europe-west1_k8s
+    statusCheckDeadlineSeconds: 300
+    kustomize:
+      paths:
+      - traefik/overlays/gke
+      - monitoring/jaeger-all-in-one/overlays/gke
+      - monitoring/prometheus-cluster-exporters/overlays/gke
+      - monitoring/prometheus-cluster-exporters/bases/metric-server
+      - grapher/polynote/overlays/gke
+      - grapher/gremlinserver-neo4j/overlays/gke
+      - app/overlays/gke
