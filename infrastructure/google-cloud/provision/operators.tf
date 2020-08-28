@@ -25,8 +25,15 @@ resource "kubernetes_namespace" "prometheus_operator_ns" {
 resource "kubernetes_namespace" "linkerd_ns" {
   metadata {
     name = "linkerd"
+    annotations = {
+      "linkerd.io/inject" = "disabled"
+    }
     labels = {
       istio-injection = "disabled"
+
+      "config.linkerd.io/admission-webhooks" = "disabled"
+      "linkerd.io/control-plane-ns"          = "linkerd"
+      "linkerd.io/is-control-plane"          = "true"
     }
   }
 }
