@@ -20,3 +20,4 @@ secretGenerator:
 
 patchesStrategicMerge:
 - tune-ingressroute.yaml
+- gremlinserver-persist-neo4j-data.yaml

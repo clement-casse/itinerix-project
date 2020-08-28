@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gremlinserver-neo4j
+spec:
+  template:
+    spec:
+      containers:
+      - name: gremlinserver-neo4j
+        volumeMounts:
+        - mountPath: /opt/gremlin-server/data/neo4j
+          name: neo4j-data-volume
+      volumes:
+      - name: neo4j-data-volume
+        gcePersistentDisk:
+          pdName: "gremlinserver-neo4j-data"

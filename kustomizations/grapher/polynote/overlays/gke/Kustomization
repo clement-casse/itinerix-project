@@ -23,7 +23,7 @@ secretGenerator:
   files:
   - polynote/users
 
-
 patchesStrategicMerge:
 - polynote-add-ref-notebooks.yaml
 - tune-ingressroute.yaml
+- polynote-persist-notebooks.yaml
