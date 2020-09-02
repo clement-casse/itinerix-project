@@ -5,14 +5,29 @@ receivers:
       thrift_binary:
       thrift_compact:
       thrift_http:
+
   opencensus:
+
+  # prometheus:
+  #   config:
+  #     scrape_configs:
+  #     - job_name: "linkerd-proxy"
+  #       scrape_interval: 5s
+  #       static_configs:
+  #       - targets: [ "localhost:4191" ]
+
+
 
 processors:
   batch:
     timeout: 5s
-    send_batch_size: 128   
+    send_batch_size: 128
+
   resource:
     attributes:
+    - key: service.name
+      action: upsert
+      value: ${SERVICE_NAME}
     - key: service.instance.id
       action: upsert
       value: ${K8S_POD_NAME}
@@ -43,6 +58,16 @@ processors:
     - key: cloud.region
       action: upsert
       value: europe-west1
+    - key: experimentation
+      action: delete
+    - key: app
+      action: delete
+    - key: pod-template-hash
+      action: delete
+    - key: opencensus.starttime
+      action: delete
+    - key: opencensus.pid
+      action: delete
 
 
 
@@ -50,9 +75,16 @@ exporters:
   jaeger:
     endpoint: jaeger-collector.monitoring.svc.cluster.local:14250
 
+  # prometheus:
+
+
+
 service:
   pipelines:
     traces:
       receivers: [jaeger, opencensus]
       processors: [batch, resource]
       exporters: [jaeger]
+    # metrics:
+    #   receivers: [prometheus, opencensus]
+    #   exporters: [prometheus]

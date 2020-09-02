@@ -113,6 +113,94 @@ metadata:
   name: cartservice
   annotations:
     linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
+    spec:
+      containers:
+      - name: jaeger-agent
+        image: jaegertracing/jaeger-opentelemetry-agent:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5778
+          name: http-config-ag
+          protocol: TCP
+        - containerPort: 6831
+          name: jg-compact-trft
+          protocol: UDP
+        - containerPort: 6832
+          name: jg-binary-trft
+          protocol: UDP
+        - containerPort: 14268
+          name: http-traces
+          protocol: TCP
+        - containerPort: 14250
+          name: grpc-traces
+          protocol: TCP
+        - containerPort: 55678
+          name: oc-traces
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        env:
+        - name: SERVICE_NAME
+          value: cartservice
+        - name: K8S_NAMESPACE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K8S_CLUSTER_NAME
+          value: k8s
+        - name: K8S_POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: K8S_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        args: [
+          --http-server.host-port=:5778,
+          --config=/etc/otel/config.yaml,
+        ]
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 5m
+            memory: 10Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+      volumes:
+      - name: otel-agent-config-volume
+        configMap:
+          name: otel-agent-config
 
 
 ---
@@ -345,6 +433,85 @@ spec:
           value: "1"
         # - name: DISABLE_TRACING
         #   value: "1"
+      - name: jaeger-agent
+        image: jaegertracing/jaeger-opentelemetry-agent:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5778
+          name: http-config-ag
+          protocol: TCP
+        - containerPort: 6831
+          name: jg-compact-trft
+          protocol: UDP
+        - containerPort: 6832
+          name: jg-binary-trft
+          protocol: UDP
+        - containerPort: 14268
+          name: http-traces
+          protocol: TCP
+        - containerPort: 14250
+          name: grpc-traces
+          protocol: TCP
+        - containerPort: 55678
+          name: oc-traces
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        env:
+        - name: SERVICE_NAME
+          value: emailservice
+        - name: K8S_NAMESPACE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K8S_CLUSTER_NAME
+          value: k8s
+        - name: K8S_POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: K8S_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        args: [
+          --http-server.host-port=:5778,
+          --config=/etc/otel/config.yaml,
+        ]
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 5m
+            memory: 10Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+      volumes:
+      - name: otel-agent-config-volume
+        configMap:
+          name: otel-agent-config
 
 ---
 apiVersion: apps/v1
@@ -459,6 +626,94 @@ metadata:
   name: paymentservice
   annotations:
     linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      annotations:
+        linkerd.io/inject: enabled
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
+    spec:
+      containers:
+      - name: jaeger-agent
+        image: jaegertracing/jaeger-opentelemetry-agent:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5778
+          name: http-config-ag
+          protocol: TCP
+        - containerPort: 6831
+          name: jg-compact-trft
+          protocol: UDP
+        - containerPort: 6832
+          name: jg-binary-trft
+          protocol: UDP
+        - containerPort: 14268
+          name: http-traces
+          protocol: TCP
+        - containerPort: 14250
+          name: grpc-traces
+          protocol: TCP
+        - containerPort: 55678
+          name: oc-traces
+          protocol: TCP
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        env:
+        - name: SERVICE_NAME
+          value: paymentservice
+        - name: K8S_NAMESPACE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: K8S_CLUSTER_NAME
+          value: k8s
+        - name: K8S_POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: K8S_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: K8S_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: HOST_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: HOST_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        args: [
+          --http-server.host-port=:5778,
+          --config=/etc/otel/config.yaml,
+        ]
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsUser: 65532
+          runAsGroup: 65532
+          runAsNonRoot: true
+        resources:
+          requests:
+            cpu: 5m
+            memory: 10Mi
+          limits:
+            cpu: 50m
+            memory: 100Mi
+      volumes:
+      - name: otel-agent-config-volume
+        configMap:
+          name: otel-agent-config
 
 
 ---
@@ -567,6 +822,7 @@ spec:
         configMap:
           name: otel-agent-config
 
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -670,6 +926,7 @@ spec:
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
+
 
 ---
 apiVersion: apps/v1
