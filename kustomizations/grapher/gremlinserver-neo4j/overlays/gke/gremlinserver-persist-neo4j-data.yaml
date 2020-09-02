@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: gremlinserver-neo4j
 spec:
+  strategy:
+    type: Recreate
   template:
     spec:
       containers:
