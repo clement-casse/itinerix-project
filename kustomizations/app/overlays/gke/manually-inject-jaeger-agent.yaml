@@ -14,8 +14,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
@@ -127,8 +127,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
@@ -231,8 +231,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
@@ -335,8 +335,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
@@ -358,8 +358,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
@@ -473,8 +473,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
@@ -579,8 +579,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
@@ -683,8 +683,8 @@ spec:
     metadata:
       annotations:
         linkerd.io/inject: enabled
-        config.linkerd.io/trace-collector: linkerd-collector.linkerd:55678
-        config.alpha.linkerd.io/trace-collector-service-account: linkerd-collector
+        config.linkerd.io/trace-collector: 127.0.0.1:55678
+        config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
       containers:
       - name: server
