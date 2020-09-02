@@ -10,7 +10,41 @@ receivers:
 processors:
   batch:
     timeout: 5s
-    send_batch_size: 128
+    send_batch_size: 128   
+  resource:
+    attributes:
+    - key: service.instance.id
+      action: upsert
+      value: ${K8S_POD_NAME}
+    - key: k8s.pod.name
+      action: upsert
+      value: ${K8S_POD_NAME}
+    - key: k8s.pod.uid
+      action: upsert
+      value: ${K8S_POD_UID}
+    - key: k8s.namespace.name
+      action: upsert
+      value: ${K8S_NAMESPACE_NAME}
+    - key: k8s.pod.ip
+      action: upsert
+      value: ${K8S_POD_IP}
+    - key: k8s.cluster.name
+      action: upsert
+      value: ${K8S_CLUSTER_NAME}
+    - key: host.name
+      action: upsert
+      value: ${HOST_NAME}
+    - key: host.ip
+      action: upsert
+      value: ${HOST_IP}
+    - key: cloud.provider
+      action: upsert
+      value: gcp
+    - key: cloud.region
+      action: upsert
+      value: europe-west1
+
+
 
 exporters:
   jaeger:
@@ -20,8 +54,5 @@ service:
   pipelines:
     traces:
       receivers: [jaeger, opencensus]
-      processors: [batch]
+      processors: [batch, resource]
       exporters: [jaeger]
-    metrics:
-      receivers: [opencensus]
-      #exporters: [exampleexporter]

@@ -6,6 +6,11 @@ namespace: app
 bases:
 - ../../base/
 
+configMapGenerator:
+- name: otel-agent-config
+  files:
+  - opentelemetry/config.yaml
+
 patchesStrategicMerge:
 - apply-middleware-ingress-route.yaml
 - manually-inject-jaeger-agent.yaml

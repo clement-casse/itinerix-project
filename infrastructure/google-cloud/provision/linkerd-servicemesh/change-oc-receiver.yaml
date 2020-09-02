@@ -15,12 +15,7 @@ data:
         port: 55678
       zipkin:
         port: 9411
-    queued-exporters:
-      jaeger-all-in-one:
-        num-workers: 4
-        queue-size: 100
-        retry-on-failure: true
-        sender-type: jaeger-thrift-http
-        jaeger-thrift-http:
-          collector-endpoint: http://jaeger-collector.monitoring.svc.cluster.local:14268/api/traces
-          timeout: 5s
+    exporters:
+      opencensus:
+        endpoint: jaeger-collector.monitoring.svc.cluster.local:55678
+        compression: gzip
