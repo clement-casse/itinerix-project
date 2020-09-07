@@ -43,7 +43,6 @@ spec:
             fieldRef:
               fieldPath: spec.nodeName
         args: [
-          --log-level=DEBUG,
           --http-server.host-port=:5778,
           --collector.grpc-server.host-port=:14250,
           --processor.jaeger-binary.server-host-port=:6832,
