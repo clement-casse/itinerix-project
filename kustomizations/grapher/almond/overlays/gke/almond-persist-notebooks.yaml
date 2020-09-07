@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: almond
+spec:
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      containers:
+      - name: almond
+        volumeMounts:
+        - mountPath: /home/jovyan/work
+          name: almond-data-volume
+      volumes:
+      - name: almond-data-volume
+        gcePersistentDisk:
+          pdName: "polynote-data"
+      nodeSelector:
+        zone: europe-west1-c

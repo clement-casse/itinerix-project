@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: almond
+  labels:
+    component: notebook-engine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: notebook-engine
+      engine: almond
+  template:
+    metadata:
+      labels:
+        component: notebook-engine
+        engine: almond
+    spec:
+      securityContext:
+        fsGroup: 100
+      containers:
+      - name: almond
+        image: almondsh/almond:latest
+        ports:
+        - containerPort: 8888
+          name: http-web
+        volumeMounts:
+        - mountPath: /home/jovyan/work
+          name: almond-data-volume
+        env:
+        - name: JUPYTER_PASSWORD_HASH
+          valueFrom:
+            secretKeyRef:
+              key: JUPYTER_PASSWORD_HASH
+              name: almond-env
+        command:
+        - start-notebook.sh
+        - --NotebookApp.allow_origin='*'
+        - --NotebookApp.base_url='/almond'
+        - --NotebookApp.password='$(JUPYTER_PASSWORD_HASH)'
+        readinessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: 30
+          periodSeconds: 3
+        livenessProbe:
+          initialDelaySeconds: 60
+          tcpSocket:
+            port: 8888
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 100
+          runAsNonRoot: true
+      volumes:
+      - name: almond-data-volume
+        emptyDir: {}
+

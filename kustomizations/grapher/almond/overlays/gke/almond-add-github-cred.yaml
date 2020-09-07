@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: almond
+spec:
+  template:
+    spec:
+      containers:
+      - name: almond
+        env:
+        - name: GITHUB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: GITHUB_USERNAME
+              name: almond-env
+              optional: true
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: GITHUB_TOKEN
+              name: almond-env
+              optional: true

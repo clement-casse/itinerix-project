@@ -1,0 +1,14 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: almond
+spec:
+  entryPoints:
+  - http
+  - https
+  routes:
+  - kind: Rule
+    match: PathPrefix(`/almond/`)
+    services:
+    - name: almond
+      port: 8888
