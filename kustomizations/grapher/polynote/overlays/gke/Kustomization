@@ -22,6 +22,9 @@ secretGenerator:
   behavior: replace
   files:
   - polynote/users
+- name: repository-credentials
+  files:
+  - polynote/credentials.properties
 
 patchesStrategicMerge:
 - polynote-add-ref-notebooks.yaml

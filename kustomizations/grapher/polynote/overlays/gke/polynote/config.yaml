@@ -63,6 +63,9 @@ repositories:
 - maven:
     base: http://oss.sonatype.org/content/repositories/snapshots
     changing: true
+- maven:
+    base: https://maven.pkg.github.com/clement-casse/jaeger-analytics-scala
+    changing: true
 
 ############################################################################################
 # Default dependencies. Uncommenting the following lines would add some default dependencies
@@ -150,9 +153,9 @@ ui:
 # Credentials. This list contains the list of credentials used to access the repositories
 ############################################################################################
 
-#credentials:
-#  coursier:
-#    path: ~/.config/coursier/credentials.properties
+credentials:
+  coursier:
+    path: /home/polly/.config/coursier/credentials.properties
 
 #############################################################################################################
 # Environment variables. This map gets merged with the notebook config's environment variable map at runtime.

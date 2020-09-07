@@ -17,8 +17,15 @@ spec:
         - mountPath: /opt/polynote/reference-notebooks/GremlinServerConnection.ipynb
           name: polynote-reference-notebooks-volume
           subPath: GremlinServerConnection.ipynb
+        - mountPath: /home/polly/.config/coursier/credentials.properties
+          name: repository-credentials-volume
+          subPath: credentials.properties
       volumes:
       - name: polynote-reference-notebooks-volume
         configMap:
           name: polynote-reference-notebooks
           defaultMode: 0440
+      - name: repository-credentials-volume
+        secret:
+          secretName: repository-credentials
+          defaultMode: 0400
