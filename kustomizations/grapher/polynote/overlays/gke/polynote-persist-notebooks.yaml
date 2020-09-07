@@ -16,3 +16,5 @@ spec:
       - name: polynote-data-volume
         gcePersistentDisk:
           pdName: "polynote-data"
+      nodeSelector:
+        zone: europe-west1-c

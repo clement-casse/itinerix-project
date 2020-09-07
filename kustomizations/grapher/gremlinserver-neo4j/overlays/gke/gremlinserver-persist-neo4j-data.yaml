@@ -16,3 +16,5 @@ spec:
       - name: neo4j-data-volume
         gcePersistentDisk:
           pdName: "gremlinserver-neo4j-data"
+      nodeSelector:
+        zone: europe-west1-c
