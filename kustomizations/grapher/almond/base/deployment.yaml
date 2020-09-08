@@ -27,6 +27,9 @@ spec:
         volumeMounts:
         - mountPath: /home/jovyan/work
           name: almond-data-volume
+        - mountPath: /usr/local/bin/before-notebook.d/startup-hook.sh
+          name: before-notebook-scripts
+          subPath: startup-hook.sh
         env:
         - name: JUPYTER_PASSWORD_HASH
           valueFrom:
@@ -36,15 +39,15 @@ spec:
         command:
         - start-notebook.sh
         - --NotebookApp.allow_origin='*'
-        - --NotebookApp.base_url='/almond'
+        - --NotebookApp.base_url='/notebooks'
         - --NotebookApp.password='$(JUPYTER_PASSWORD_HASH)'
         readinessProbe:
           tcpSocket:
             port: 8888
-          initialDelaySeconds: 30
+          initialDelaySeconds: 300
           periodSeconds: 3
         livenessProbe:
-          initialDelaySeconds: 60
+          initialDelaySeconds: 300
           tcpSocket:
             port: 8888
         resources:
@@ -58,4 +61,8 @@ spec:
       volumes:
       - name: almond-data-volume
         emptyDir: {}
+      - name: before-notebook-scripts
+        configMap:
+          name: before-notebook
+          defaultMode: 0777
 

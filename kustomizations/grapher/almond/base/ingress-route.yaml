@@ -8,7 +8,7 @@ spec:
   - https
   routes:
   - kind: Rule
-    match: PathPrefix(`/almond/`)
+    match: PathPrefix(`/notebooks/`)
     services:
     - name: almond
       port: 8888
