@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: neo4j
+spec:
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      containers:
+      - name: neo4j
+        env:
+        - name: NEO4J_dbms_connector_bolt_advertised__address
+          value: $(ADVERTISED_HOST):7687
+        volumeMounts:
+        - name: neo4j-data-volume
+          mountPath: /data
+      volumes:
+      - name: neo4j-data-volume
+      nodeSelector:
+        zone: europe-west1-c

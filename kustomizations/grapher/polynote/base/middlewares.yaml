@@ -16,5 +16,5 @@ metadata:
 spec:
   stripPrefix:
     prefixes:
-    - "/polynote"
+    - "/notebooks"
     forceSlash: true

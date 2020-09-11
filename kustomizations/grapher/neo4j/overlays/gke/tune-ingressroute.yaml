@@ -1,0 +1,32 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: neo4j-bolt
+spec:
+  routes:
+  - kind: Rule
+    match: Host(`grapher.itinerix-project.net`)
+    services:
+    - name: neo4j
+      port: 7687
+    middlewares: []
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: neo4j-http
+spec:
+  routes:
+  - kind: Rule
+    match: >-
+      Host(`grapher.itinerix-project.net`) && (
+      PathPrefix(`/browser/`) || (
+      PathPrefix(`/db/`) && Headers(`Content-Type`, `application/json`) && Headers(`Accept`, `application/json`)
+      )
+      )
+    services:
+    - name: neo4j
+      port: 7474
+    middlewares: []

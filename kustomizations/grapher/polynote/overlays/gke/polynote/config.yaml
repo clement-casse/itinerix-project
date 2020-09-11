@@ -146,7 +146,7 @@ repositories:
 ui:
   # The URI relative to the server host where Polynote is mounted. You can edit this if mounting Polynote at a
   # different location behind a reverse proxy. This value is placed in the <base> tag.
-  base_uri: /polynote/
+  base_uri: /notebooks/
   #base_uri: /
 
 ############################################################################################
