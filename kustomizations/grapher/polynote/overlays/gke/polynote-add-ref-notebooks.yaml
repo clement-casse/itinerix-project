@@ -7,13 +7,6 @@ spec:
     spec:
       containers:
       - name: polynote
-        env:
-        - name: NEO4J_AUTH
-          valueFrom:
-            secretKeyRef:
-              name: neo4j-env
-              key: NEO4J_AUTH
-              optional: true
         volumeMounts:
         - mountPath: /opt/polynote/reference-notebooks/JaegerTracesIngest.ipynb
           name: polynote-reference-notebooks-volume

@@ -25,8 +25,12 @@ secretGenerator:
 - name: repository-credentials
   files:
   - polynote/credentials.properties
+- name: polynote-env
+  envs:
+  - polynote/polynote.env
 
 patchesStrategicMerge:
+- polynote-add-env.yaml
 - polynote-add-ref-notebooks.yaml
-- tune-ingressroute.yaml
 - polynote-persist-notebooks.yaml
+- tune-ingressroute.yaml
