@@ -48,6 +48,7 @@ spec:
           --entrypoints.https.http.tls.certResolver=default,
           --entrypoints.traefik-internal.address=:9000,
           --entrypoints.http-bolt.address=:7687,
+          --entrypoints.http-bolt.http.tls.certResolver=default,
           --ping.entrypoint=traefik-internal,
           --metrics.prometheus.entrypoint=traefik-internal,
           --providers.kubernetescrd,
