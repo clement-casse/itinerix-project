@@ -24,8 +24,8 @@ profiles:
       paths:
       #- traefik/overlays/docker-desktop
       - monitoring/jaeger-all-in-one/overlays/docker-desktop
-      - grapher/polynote/overlays/docker-desktop
-      - grapher/gremlinserver-neo4j/overlays/docker-desktop
+      - data/polynote/overlays/docker-desktop
+      - data/gremlinserver-neo4j/overlays/docker-desktop
       - app/overlays/docker-desktop
 
 - name: gke
@@ -38,6 +38,6 @@ profiles:
       - monitoring/jaeger-all-in-one/overlays/gke
       - monitoring/prometheus-cluster-exporters/overlays/gke
       - monitoring/prometheus-cluster-exporters/bases/metric-server
-      - grapher/polynote/overlays/gke
-      - grapher/gremlinserver-neo4j/overlays/gke
+      - data/polynote/overlays/gke
+      - data/gremlinserver-neo4j/overlays/gke
       - app/overlays/gke
