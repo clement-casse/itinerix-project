@@ -43,6 +43,7 @@ kustomization/installation-manifests:
 		> $@/monitoring.coreos.com_thanosrulers.yaml
 	@echo "Done !"
 
-generate-prometheus-manifest: kustomization/generated-manifest.yaml
-kustomization/generated-manifest.yaml: kustomization/installation-manifests
+generate-prometheus-manifest: generated-manifests/operator.yaml
+generated-manifests/operator.yaml: kustomization/installation-manifests
+	@mkdir -p $(dir $@)
 	kustomize build $(dir $<) > $@

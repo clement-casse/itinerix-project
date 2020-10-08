@@ -1,0 +1,2 @@
+kustomization/installation-manifests/**/*
+generated-manifests/*.yaml

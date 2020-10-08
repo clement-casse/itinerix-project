@@ -21,7 +21,7 @@ resource "kubectl_manifest" "prometheus_operator_crds" {
 
 
 data "kubectl_file_documents" "prometheus_operator_manifests" {
-  content = file("${path.module}/kustomization/generated-manifest.yaml")
+  content = file("${path.module}/generated-manifests/operator.yaml")
 }
 
 resource "kubectl_manifest" "prometheus_operator" {
