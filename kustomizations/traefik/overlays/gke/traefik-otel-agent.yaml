@@ -15,7 +15,7 @@ spec:
           name: http-admin-agent
         env:
         - name: SERVICE_NAME
-          value: adservice
+          value: traefik
         - name: K8S_NAMESPACE_NAME
           valueFrom:
             fieldRef:

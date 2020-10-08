@@ -1,0 +1,98 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: istio-controlplane
+  namespace: istio-system
+spec:
+  profile: demo
+  namespace: istio-system
+
+  meshConfig:
+    enableTracing: true
+    enablePrometheusMerge: true
+    enableAutoMtls: false
+    defaultConfig:
+      tracing:
+        zipkin:
+          address: jaeger-collector:9411
+      sds:
+        enabled: true
+
+  components:
+    base:
+      enabled: true
+      # k8s:
+      #   overlays:
+      #   - apiVersion: ''
+      #     kind: ''
+      #     name: ''
+      #     patches:
+      #     - path: ''
+      #       value: ''
+    pilot:
+      enabled: true
+      k8s:
+        replicaCount: 1
+        env:
+        - name: PILOT_TRACE_SAMPLING
+          value: '100.0'
+        - name: PILOT_ENABLE_REDIS_FILTER
+          value: 'true'
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        hpaSpec:
+          minReplicas: 1
+          maxReplicas: 1
+    ingressGateways:
+    - name: istio-ingressgateway
+      namespace: istio-system
+      enabled: true
+      k8s:
+        replicaCount: 1
+        service:
+          ports:
+          - name: http
+            port: 80
+            targetPort: 8000
+          - name: https
+            port: 443
+            targetPort: 4443
+          - name: http-monitor
+            port: 8888
+            targetPort: 8888
+          - name: bolt
+            port: 7687
+            targetPort: 7687
+        resources:
+          limits:
+            cpu: 100m
+            memory: 256Mi
+          requests:
+            cpu: 50m
+            memory: 128Mi
+        hpaSpec:
+          minReplicas: 1
+          maxReplicas: 1
+  # addonComponents:
+  #   grafana:
+  #     enabled: false
+  #   kiali:
+  #     enabled: true
+  #   prometheus:
+  #     enabled: false
+  #   tracing:
+  #     enabled: false
+
+  values:
+    kiali:
+      replicaCount: 1
+      contextPath: "/kiali"
+      prometheusAddr: http://prometheus:9090/prometheus/
+      dashboard:
+        auth:
+          strategy: anonymous
