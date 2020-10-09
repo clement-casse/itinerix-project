@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polynote
+spec:
+  template:
+    spec:
+      containers:
+      - name: polynote
+        env:
+        - name: NEO4J_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: polynote-env
+              key: NEO4J_PASSWORD

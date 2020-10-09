@@ -1,6 +1,6 @@
-all: generate-prometheus-manifest
+all: generate-strimzi-manifest
 
-.PHONY: all get-prometheus generate-prometheus-manifest
+.PHONY: all get-strimzi generate-strimzi-manifest
 
 STRIMZI_VERSION ?= 0.19.0
 STRIMZI_OPERATOR_NS ?= strimzi-system
@@ -16,6 +16,7 @@ kustomization/installation-manifests:
 	@sed -i 's/namespace: .*/namespace: $(STRIMZI_OPERATOR_NS)/' $@/cluster-operator/*RoleBinding*.yaml
 	@echo "Done !"
 
-generate-strimzi-manifest: kustomization/generated-manifest.yaml
-provision/generated-manifest.yaml: kustomization/installation-manifests
+generate-strimzi-manifest: generated-manifests/operator.yaml
+generated-manifests/operator.yaml: kustomization/installation-manifests
+	@mkdir -p $(dir $@)
 	kustomize build $(dir $<) > $@

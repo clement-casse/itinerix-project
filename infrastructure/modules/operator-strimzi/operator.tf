@@ -1,6 +1,6 @@
-resource "kubernetes_namespace" "prometheus_operator_ns" {
+resource "kubernetes_namespace" "strimzi_ns" {
   metadata {
-    name = "prometheus-system"
+    name = "strimzi-system"
     annotations = {
       "linkerd.io/inject" = "disabled"
     }
@@ -11,7 +11,7 @@ resource "kubernetes_namespace" "prometheus_operator_ns" {
 }
 
 data "kubectl_file_documents" "strimzi_operator_manifests" {
-  content = file("./kustomization/generated-manifest.yaml")
+  content = file("${path.module}/generated-manifests/operator.yaml")
 }
 
 resource "kubectl_manifest" "strimzi_operator" {

@@ -22,6 +22,7 @@ module "service_mesh" {
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
     acme_email                 = var.acme_email
+    domain_name                = var.acme_domain
     dashboard_users            = var.dashboard_users
 }
 
@@ -41,4 +42,36 @@ module "prometheus_operator" {
     k8s_host                   = module.cluster.host
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+}
+
+# REMOVING SOME MODULE WITH CRDs & HUGE LOCAL FILES AS THEY MAKE TERRAFOR STATE BE TOO LARGE
+# THEREFORE ANY PLAN IN TERRAFORM FAILS
+# module "strimzi_operator" {
+#     source = "../modules/operator-strimzi"
+# 
+#     k8s_host                   = module.cluster.host
+#     k8s_token                  = data.google_client_config.current.access_token
+#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+# }
+
+module "stack-tracing" {
+    source = "../modules/stack-tracing"
+
+    k8s_host                   = module.cluster.host
+    k8s_token                  = data.google_client_config.current.access_token
+    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+
+    domain_name  = var.acme_domain
+    jaeger_users = var.dashboard_users
+}
+
+module "stack-data" {
+    source = "../modules/stack-data"
+
+    k8s_host                   = module.cluster.host
+    k8s_token                  = data.google_client_config.current.access_token
+    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+
+    domain_name  = var.acme_domain
+    notebook_users = var.dashboard_users
 }

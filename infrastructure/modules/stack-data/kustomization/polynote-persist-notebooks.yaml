@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: polynote
+spec:
+  strategy:
+    type: Recreate
+  template:
+    spec:
+      containers:
+      - name: polynote
+        volumeMounts:
+        - mountPath: /opt/notebooks/
+          name: polynote-data-volume
+      volumes:
+      - name: polynote-data-volume
+        gcePersistentDisk:
+          pdName: "polynote-data"
+      nodeSelector:
+        zone: europe-west1-c

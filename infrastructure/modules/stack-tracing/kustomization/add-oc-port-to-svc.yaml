@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector
+spec:
+  ports:
+  - name: oc
+    port: 55678
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector-headless
+spec:
+  ports:
+  - name: oc
+    port: 55678

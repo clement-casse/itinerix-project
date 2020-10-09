@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-all-in-one
+spec:
+  template:
+    spec:
+      containers:
+      - name: jaeger-all-in-one
+        volumeMounts:
+        - mountPath: /etc/jaeger/otel/config.yaml
+          name: jaeger-opentelemetry-config-volume
+          subPath: config.yaml
+          readOnly: true
+        args: [
+          --log-level=debug,
+          --config=/etc/jaeger/otel/config.yaml,
+        ]
+      volumes:
+      - name: jaeger-opentelemetry-config-volume
+        configMap:
+          name: jaeger-opentelemetry-config

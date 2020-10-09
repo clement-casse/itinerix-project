@@ -256,7 +256,7 @@ resource "kubernetes_config_map" "traefik_config" {
 
     [providers]
       [providers.kubernetesCRD]
-        namespaces = [ "${kubernetes_namespace.traefik_ns.metadata.0.name}" ]
+        namespaces = [ ]
     EOF
   }
 }
@@ -551,7 +551,7 @@ resource "kubectl_manifest" "traefik_dashboard" {
     - https
     routes:
     - kind: Rule
-      match: Host(`monitoring.itinerix-project.net`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      match: Host(`monitoring.${var.domain_name}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
       services:
       - name: api@internal
         kind: TraefikService

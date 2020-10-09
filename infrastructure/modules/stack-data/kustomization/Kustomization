@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: data
+
+bases:
+- https://github.com/clement-casse/itinerix-project/kustomizations/data/polynote/base
+- https://github.com/clement-casse/itinerix-project/kustomizations/data/neo4j/base
+
+configMapGenerator:
+- name: polynote-config-file
+  behavior: replace
+  files:
+  - polynote/config.yaml
+
+secretGenerator:
+- name: polynote-env
+  envs:
+  - polynote/polynote.env
+- name: neo4j-env
+  behavior: merge
+  envs:
+  - neo4j/neo4j.env
+
+patchesStrategicMerge:
+- polynote-add-env.yaml
+- polynote-persist-notebooks.yaml
+- persist-neo4j-data.yaml

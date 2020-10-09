@@ -13,19 +13,13 @@ variable "k8s_cluster_ca_certificate" {
   type        = string
 }
 
-variable "acme_email" {
-  description = ""
-  type        = string
-  default     = ""
-}
-
 variable "domain_name" {
   description = ""
   type        = string
   default     = "localhost"
 }
 
-variable "dashboard_users" {
+variable "notebook_users" {
   description = ""
   type        = string
   default     = <<-EOF
