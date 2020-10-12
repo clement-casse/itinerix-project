@@ -82,43 +82,5 @@ resource "kubectl_manifest" "notebook_ingress_cfg" {
       - name: polynote-strip-prefix
     tls:
       certResolver: default
-  ---
-  apiVersion: traefik.containo.us/v1alpha1
-  kind: IngressRoute
-  metadata:
-    name: neo4j-bolt
-    namespace: ${kubernetes_namespace.data_ns.metadata.0.name}
-  spec:
-    entryPoints:
-    - http-bolt
-    routes:
-    - kind: Rule
-      match: Host(`*`)
-      services:
-      - name: neo4j
-        port: 7687
-      middlewares: []
-  ---
-  apiVersion: traefik.containo.us/v1alpha1
-  kind: IngressRoute
-  metadata:
-    name: neo4j-http
-    namespace: ${kubernetes_namespace.data_ns.metadata.0.name}
-  spec:
-    entryPoints:
-    - http
-    - https
-    routes:
-    - kind: Rule
-      match: >-
-        Host(`*`) && (
-        PathPrefix(`/browser/`) || (
-        PathPrefix(`/db/`) && Headers(`Content-Type`, `application/json`) && Headers(`Accept`, `application/json`)
-        )
-        )
-      services:
-      - name: neo4j
-        port: 7474
-      middlewares: []
   EOF
 }

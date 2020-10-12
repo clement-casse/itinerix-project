@@ -153,9 +153,9 @@ ui:
 # Credentials. This list contains the list of credentials used to access the repositories
 ############################################################################################
 
-credentials:
-  coursier:
-    path: /home/polly/.config/coursier/credentials.properties
+# credentials:
+#   coursier:
+#     path: /home/polly/.config/coursier/credentials.properties
 
 #############################################################################################################
 # Environment variables. This map gets merged with the notebook config's environment variable map at runtime.

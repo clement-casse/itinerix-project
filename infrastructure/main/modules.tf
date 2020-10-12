@@ -44,7 +44,7 @@ module "prometheus_operator" {
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 }
 
-# REMOVING SOME MODULE WITH CRDs & HUGE LOCAL FILES AS THEY MAKE TERRAFOR STATE BE TOO LARGE
+# REMOVING SOME MODULE WITH CRDs & HUGE LOCAL FILES AS THEY MAKE TERRAFORM STATE BE TOO LARGE
 # THEREFORE ANY PLAN IN TERRAFORM FAILS
 # module "strimzi_operator" {
 #     source = "../modules/operator-strimzi"
@@ -72,6 +72,6 @@ module "stack-data" {
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
-    domain_name  = var.acme_domain
+    domain_name    = var.acme_domain
     notebook_users = var.dashboard_users
 }
