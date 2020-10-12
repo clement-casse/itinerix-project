@@ -75,3 +75,13 @@ module "stack-data" {
     domain_name    = var.acme_domain
     notebook_users = var.dashboard_users
 }
+
+module "prepare-stack-app" {
+    source = "../modules/prepare-stack-app"
+
+    k8s_host                   = module.cluster.host
+    k8s_token                  = data.google_client_config.current.access_token
+    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+
+    domain_name    = var.acme_domain
+}

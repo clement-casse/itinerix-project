@@ -1,8 +1,0 @@
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: l5d-header-middleware
-spec:
-  headers:
-    customRequestHeaders:
-      l5d-dst-override: "frontend.app.svc.cluster.local:80"
