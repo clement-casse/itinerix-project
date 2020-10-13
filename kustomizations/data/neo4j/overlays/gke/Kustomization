@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: grapher
+namespace: data
 
 bases:
 - ../../base
@@ -13,5 +13,4 @@ secretGenerator:
   - secrets/neo4j.env
 
 patchesStrategicMerge:
-- tune-ingressroute.yaml
 - persist-neo4j-data.yaml

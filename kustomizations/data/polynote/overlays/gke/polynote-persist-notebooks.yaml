@@ -13,7 +13,8 @@ spec:
         - mountPath: /opt/notebooks/
           name: polynote-data-volume
       volumes:
-      - name: polynote-data-volume
+      - $patch: replace
+        name: polynote-data-volume
         gcePersistentDisk:
           pdName: "polynote-data"
       nodeSelector:

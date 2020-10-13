@@ -16,20 +16,9 @@ configMapGenerator:
   files:
   - opentelemetry/config.yaml
 
-
-secretGenerator:
-- name: traefik-htpasswd-jaeger
-  namespace: monitoring
-  files:
-  - jaeger/users
-
 patchesStrategicMerge:
 - add-oc-port-to-svc.yaml
 - jaeger-all-in-one-opentelemetry.yaml
-- tls-ingress-route.yaml
-
-resources:
-- jaeger-middlewares.yaml
 
 images:
 - name: jaegertracing/all-in-one

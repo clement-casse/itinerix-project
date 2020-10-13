@@ -15,4 +15,3 @@ secretGenerator:
 resources:
 - deployment.yaml
 - service.yaml
-- ingress-route.yaml

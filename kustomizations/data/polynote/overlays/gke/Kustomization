@@ -1,7 +1,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-namespace: grapher
+namespace: data
 
 bases:
 - ../../base
@@ -18,10 +18,6 @@ configMapGenerator:
   - polynote/notebooks/GremlinServerConnection.ipynb
 
 secretGenerator:
-- name: htpasswd-polynote
-  behavior: replace
-  files:
-  - polynote/users
 - name: repository-credentials
   files:
   - polynote/credentials.properties
@@ -33,4 +29,3 @@ patchesStrategicMerge:
 - polynote-add-env.yaml
 - polynote-add-ref-notebooks.yaml
 - polynote-persist-notebooks.yaml
-- tune-ingressroute.yaml

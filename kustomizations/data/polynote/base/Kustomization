@@ -18,6 +18,4 @@ configMapGenerator:
 
 resources:
 - deployment.yaml
-- ingress-route.yaml
-- middlewares.yaml
 - service.yaml
