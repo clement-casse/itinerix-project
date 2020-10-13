@@ -13,10 +13,12 @@ spec:
         - name: NEO4J_dbms_connector_bolt_advertised__address
           value: $(ADVERTISED_HOST):7687
         volumeMounts:
-        - $patch: replace
-          name: neo4j-data-volume
+        - name: neo4j-data-volume
           mountPath: /data
       volumes:
-      - name: neo4j-data-volume
+      - $patch: replace
+        name: neo4j-data-volume
+        gcePersistentDisk:
+          pdName: "gremlinserver-neo4j-data"
       nodeSelector:
         zone: europe-west1-c
