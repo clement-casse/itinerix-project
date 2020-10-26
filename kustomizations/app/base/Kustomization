@@ -23,6 +23,8 @@ resources:
 - ./microservices-demo/kubernetes-manifests/redis.yaml
 - ./microservices-demo/kubernetes-manifests/shippingservice.yaml
 
+- rbac.yaml
+
 patchesStrategicMerge:
 - manually-inject-jaeger-agent.yaml
 - remove-loadbalancer.yaml

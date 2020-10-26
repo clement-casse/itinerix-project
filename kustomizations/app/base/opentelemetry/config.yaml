@@ -8,6 +8,8 @@ receivers:
 
   opencensus:
 
+  zipkin:
+
   # prometheus:
   #   config:
   #     scrape_configs:
@@ -57,7 +59,10 @@ processors:
       value: gcp
     - key: cloud.region
       action: upsert
-      value: europe-west1
+      value: REGION_NAME_TO_REPLACE
+    - key: cloud.zone
+      action: upsert
+      value: ZONE_NAME_TO_REPLACE
     - key: experimentation
       action: delete
     - key: app
@@ -82,7 +87,7 @@ exporters:
 service:
   pipelines:
     traces:
-      receivers: [jaeger, opencensus]
+      receivers: [jaeger, zipkin, opencensus]
       processors: [batch, resource]
       exporters: [jaeger]
     # metrics:

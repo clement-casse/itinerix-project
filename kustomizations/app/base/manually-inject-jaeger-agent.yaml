@@ -17,6 +17,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -50,7 +76,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -102,6 +128,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -121,6 +149,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: jaeger-agent
         image: jaegertracing/jaeger-opentelemetry-agent:latest
@@ -146,7 +200,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -198,6 +252,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -218,6 +274,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -251,7 +333,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -303,6 +385,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -322,6 +406,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -355,7 +465,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -407,6 +517,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -426,6 +538,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -457,7 +595,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -509,6 +647,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -528,6 +668,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -563,7 +729,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -615,6 +781,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -634,6 +802,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: jaeger-agent
         image: jaegertracing/jaeger-opentelemetry-agent:latest
@@ -659,7 +853,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -711,6 +905,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -731,6 +927,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -766,7 +988,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -818,6 +1040,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -838,6 +1062,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -871,7 +1121,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -923,6 +1173,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
@@ -943,6 +1195,32 @@ spec:
         config.linkerd.io/trace-collector: 127.0.0.1:55678
         config.alpha.linkerd.io/trace-collector-service-account: default
     spec:
+      serviceAccountName: node-reader
+      initContainers:
+      - name: init-otel
+        image: bitnami/kubectl
+        volumeMounts:
+        - mountPath: /etc/otel/config.yaml
+          name: otel-agent-config-volume
+          subPath: config.yaml
+          readOnly: true
+        - mountPath: tmp
+          name: new-otel-agent-config-volume
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        command:
+        - sh
+        - -c
+        - >-
+          set -x;
+          export ZONE_NAME=$(kubectl get no "${NODE_NAME}" -o go-template --template="{{.metadata.labels.zone}}");
+          export REGION_NAME="europe-west1";
+          sed -e "s/ZONE_NAME_TO_REPLACE/${ZONE_NAME}/" \
+              -e "s/REGION_NAME_TO_REPLACE/${REGION_NAME}/" \
+              /etc/otel/config.yaml > /tmp/config.yaml;
       containers:
       - name: server
         env:
@@ -978,7 +1256,7 @@ spec:
           protocol: TCP
         volumeMounts:
         - mountPath: /etc/otel/config.yaml
-          name: otel-agent-config-volume
+          name: new-otel-agent-config-volume
           subPath: config.yaml
           readOnly: true
         env:
@@ -1030,6 +1308,8 @@ spec:
             cpu: 50m
             memory: 100Mi
       volumes:
+      - name: new-otel-agent-config-volume
+        emptyDir: {}
       - name: otel-agent-config-volume
         configMap:
           name: otel-agent-config
