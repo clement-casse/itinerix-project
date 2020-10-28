@@ -25,4 +25,4 @@ secretGenerator:
 patchesStrategicMerge:
 - polynote-add-env.yaml
 - polynote-persist-notebooks.yaml
-- persist-neo4j-data.yaml
+- neo4j-persist-data.yaml
