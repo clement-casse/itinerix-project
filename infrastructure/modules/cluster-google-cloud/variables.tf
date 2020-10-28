@@ -13,11 +13,20 @@ variable "zone_pool_1" {
   type        = string
 }
 
+variable "nodes_in_pool_1" {
+  description = "Total number of K8S nodes to deploy in Pool 1"
+  type        = number
+}
+
 variable "zone_pool_2" {
   description = "The zone in which to create the second Kubernetes cluster. Must match the region"
   type        = string
 }
 
+variable "nodes_in_pool_2" {
+  description = "Total number of K8S nodes to deploy in Pool 2"
+  type        = number
+}
 
 // Optional values that can be overridden or appended to if desired.
 variable "cluster_name" {

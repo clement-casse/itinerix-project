@@ -10,9 +10,11 @@ module "cluster" {
     project = var.gke_project
     region  = var.gke_region
 
-    zone_pool_1  = var.gke_zone_pool_1
-    zone_pool_2  = var.gke_zone_pool_2
-    cluster_name = var.gke_cluster_name
+    zone_pool_1     = var.gke_zone_pool_1
+    nodes_in_pool_1 = 2
+    zone_pool_2     = var.gke_zone_pool_2
+    nodes_in_pool_2 = 2
+    cluster_name    = var.gke_cluster_name
 }
 
 module "service_mesh" {

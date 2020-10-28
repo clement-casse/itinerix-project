@@ -20,7 +20,7 @@ resource "google_container_node_pool" "node-pool-1" {
   cluster    = google_container_cluster.primary.name
   location   = var.region
   name       = "pool-1"
-  node_count = 1
+  node_count = var.nodes_in_pool_1
 
   node_locations = [
     var.zone_pool_1,
@@ -55,7 +55,7 @@ resource "google_container_node_pool" "node-pool-2" {
   cluster    = google_container_cluster.primary.name
   location   = var.region
   name       = "pool-2"
-  node_count = 2
+  node_count = var.nodes_in_pool_2
 
   node_locations = [
     var.zone_pool_2,
