@@ -3,7 +3,7 @@ CAN_RUN := $(foreach exec,$(REQUIRED_EXECUTABLES), \
 	$(if $(shell which $(exec)), "$(exec) found", $(error "The tool $(exec) cannot be found in PATH")) \
 )
 
-ISTIO_VERSION ?= 1.6.11
+ISTIO_VERSION ?= 1.6.13
 
 all: generate-istio-manifests
 

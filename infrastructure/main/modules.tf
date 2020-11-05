@@ -28,6 +28,15 @@ module "service_mesh" {
     dashboard_users            = var.dashboard_users
 }
 
+# module "service_mesh" {
+#     source = "../modules/service-mesh-istio"
+
+#     k8s_host                   = module.cluster.host
+#     k8s_token                  = data.google_client_config.current.access_token
+#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+#     acme_email                 = var.acme_email
+# }
+
 module "domain" {
     source = "../modules/dns-google-cloud"
 

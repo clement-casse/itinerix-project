@@ -43,6 +43,46 @@ data "kubectl_file_documents" "istio_pilot_telemetry" {
 }
 
 
+resource "kubernetes_service" "istio_ingressgateway" {
+  metadata {
+    name      = "istio-ingressgateway"
+    namespace = kubernetes_namespace.istio_ns.metadata.0.name
+    labels = {
+      "app"   = "istio-ingressgateway"
+      "istio" = "ingressgateway"
+      "release" = "istio"
+    }
+  }
+  spec {
+    type = "LoadBalancer"
+    selector = {
+      "app"   = "istio-ingressgateway"
+      "istio" = "ingressgateway"
+    }
+    port {
+      name        = "http"
+      port        = 80
+      target_port = 8000
+    }
+    port {
+      name        = "https"
+      port        = 443
+      target_port = 4443
+    }
+    port {
+      name        = "http-bolt"
+      port        = 7687
+      target_port = 7687
+    }
+    port {
+      name        = "http-monitor"
+      port        = 8888
+      target_port = 8888
+    }
+  }
+  depends_on = [kubernetes_namespace.istio_ns]
+}
+
 resource "kubectl_manifest" "istio_base" {
   count     = length(data.kubectl_file_documents.istio_base.documents)
   yaml_body = element(data.kubectl_file_documents.istio_base.documents, count.index)

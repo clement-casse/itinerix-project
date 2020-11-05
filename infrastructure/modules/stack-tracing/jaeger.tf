@@ -73,3 +73,56 @@ resource "kubectl_manifest" "jaeger_ingress_cfg" {
       certResolver: default
   EOF
 }
+
+
+###
+### ISTIO SPECIFIC FOR INGRESS TRAFFIC
+###
+# resource "kubectl_manifest" "monitoring_ingress_cfg" {
+#   yaml_body = <<-EOF
+#   ---
+#   apiVersion: networking.istio.io/v1alpha3
+#   kind: Gateway
+#   metadata:
+#     name: monitoring-gateway
+#     namespace: ${kubernetes_namespace.monitoring_ns.metadata.0.name}
+#   spec:
+#     selector:
+#       istio: ingressgateway
+#     servers:
+#     - hosts: [ "monitoring.${var.domain_name}" ]
+#       port:
+#         number: 80
+#         name: http
+#         protocol: HTTP
+#   ---
+#   apiVersion: networking.istio.io/v1alpha3
+#   kind: VirtualService
+#   metadata:
+#     name: jaeger-ingress
+#     namespace: ${kubernetes_namespace.monitoring_ns.metadata.0.name}
+#   spec:
+#     hosts: [ "monitoring.${var.domain_name}" ]
+#     gateways:
+#     - monitoring-gateway
+#     http:
+#     - name: jaeger-route
+#       match:
+#       - uri:
+#         prefix: "/jaeger"
+#       route:
+#       - destination:
+#           host: jaeger-query
+#           port:
+#             number: 16686
+#     # - name: prometheus-route
+#     #   match:
+#     #   - uri:
+#     #     prefix: "/prometheus"
+#     #   route:
+#     #   - destination:
+#     #     host: prometheus-operated
+#     #     port:
+#     #       number: 9090
+#   EOF
+# }
