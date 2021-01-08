@@ -18,7 +18,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: polynote
-        image: polynote/polynote:0.3.12-2.12
+        image: polynote/polynote:0.3.12-2.12-spark2.4
         ports:
         - containerPort: 8192
           name: http-web
