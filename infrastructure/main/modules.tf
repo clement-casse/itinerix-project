@@ -18,24 +18,20 @@ module "cluster" {
 }
 
 module "service_mesh" {
-    source = "../modules/service-mesh-linkerd"
+    source = "../modules/service-mesh-istio"
 
     k8s_host                   = module.cluster.host
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
-    acme_email                 = var.acme_email
-    domain_name                = var.acme_domain
-    dashboard_users            = var.dashboard_users
+
+    project      = var.gke_project
+    region       = var.gke_region
+    cluster_name = var.gke_cluster_name
+
+    istio_version   = "1.8.3"
+    istio_namespace = "istio-system"
+    # dashboard_users            = var.dashboard_users
 }
-
-# module "service_mesh" {
-#     source = "../modules/service-mesh-istio"
-
-#     k8s_host                   = module.cluster.host
-#     k8s_token                  = data.google_client_config.current.access_token
-#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
-#     acme_email                 = var.acme_email
-# }
 
 module "domain" {
     source = "../modules/dns-google-cloud"
@@ -47,13 +43,32 @@ module "domain" {
     domain           = var.acme_domain
 }
 
-module "prometheus_operator" {
-    source = "../modules/operator-prometheus"
+module "cert-manager" {
+    source = "../modules/cert-manager"
+
+    project      = var.gke_project
+    region       = var.gke_region
+    cluster_name = var.gke_cluster_name
 
     k8s_host                   = module.cluster.host
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+
+    certmanager_version = "v1.1.0"
+    acme_email          = var.acme_email
+    domain_name         = var.acme_domain
+
+    certificates_target_ns = "istio-system"
+    certificates_to_create = module.domain.dns_records
 }
+
+# module "prometheus_operator" {
+#     source = "../modules/operator-prometheus"
+#
+#     k8s_host                   = module.cluster.host
+#     k8s_token                  = data.google_client_config.current.access_token
+#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+# }
 
 # REMOVING SOME MODULE WITH CRDs & HUGE LOCAL FILES AS THEY MAKE TERRAFORM STATE BE TOO LARGE
 # THEREFORE ANY PLAN IN TERRAFORM FAILS
@@ -65,34 +80,34 @@ module "prometheus_operator" {
 #     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 # }
 
-module "stack-tracing" {
-    source = "../modules/stack-tracing"
+# module "stack-tracing" {
+#     source = "../modules/stack-tracing"
+# 
+#     k8s_host                   = module.cluster.host
+#     k8s_token                  = data.google_client_config.current.access_token
+#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+# 
+#     domain_name  = var.acme_domain
+#     jaeger_users = var.dashboard_users
+# }
 
-    k8s_host                   = module.cluster.host
-    k8s_token                  = data.google_client_config.current.access_token
-    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+# module "stack-data" {
+#     source = "../modules/stack-data"
+# 
+#     k8s_host                   = module.cluster.host
+#     k8s_token                  = data.google_client_config.current.access_token
+#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+# 
+#     domain_name    = var.acme_domain
+#     notebook_users = var.dashboard_users
+# }
 
-    domain_name  = var.acme_domain
-    jaeger_users = var.dashboard_users
-}
+# module "prepare-stack-app" {
+#     source = "../modules/prepare-stack-app"
 
-module "stack-data" {
-    source = "../modules/stack-data"
+#     k8s_host                   = module.cluster.host
+#     k8s_token                  = data.google_client_config.current.access_token
+#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
-    k8s_host                   = module.cluster.host
-    k8s_token                  = data.google_client_config.current.access_token
-    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
-
-    domain_name    = var.acme_domain
-    notebook_users = var.dashboard_users
-}
-
-module "prepare-stack-app" {
-    source = "../modules/prepare-stack-app"
-
-    k8s_host                   = module.cluster.host
-    k8s_token                  = data.google_client_config.current.access_token
-    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
-
-    domain_name    = var.acme_domain
-}
+#     domain_name    = var.acme_domain
+# }

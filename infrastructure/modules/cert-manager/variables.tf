@@ -13,6 +13,11 @@ variable "k8s_cluster_ca_certificate" {
   type        = string
 }
 
+variable "acme_email" {
+  description = ""
+  type        = string
+  default     = ""
+}
 variable "project" {
   description = "The project in which to hold the components"
   type        = string
@@ -29,15 +34,26 @@ variable "cluster_name" {
   default     = "private-cluster"
 }
 
-
-variable "istio_version" {
-  description = "Version Number of Istio"
+variable "domain_name" {
+  description = ""
   type        = string
-  default     = "1.9.0"
+  default     = "localhost"
 }
 
-variable "istio_namespace" {
-  description = "Namespace of Istio"
+variable "certmanager_version" {
+  description = "Version Number of cert-manager"
   type        = string
-  default     = "istio-system"
+  default     = "v1.1.0"
+}
+
+variable "certificates_target_ns" {
+  description = "K8S Namespace in which certificates are going to be installed"
+  type        = string
+  default     = "default"
+}
+
+variable "certificates_to_create" {
+  description = "list of domains to create a certificate"
+  type        = list(string)
+  default     = []
 }

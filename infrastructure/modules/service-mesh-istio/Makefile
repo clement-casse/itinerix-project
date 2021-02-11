@@ -1,13 +1,13 @@
-REQUIRED_EXECUTABLES := curl
+REQUIRED_EXECUTABLES := curl kubectl
 CAN_RUN := $(foreach exec,$(REQUIRED_EXECUTABLES), \
 	$(if $(shell which $(exec)), "$(exec) found", $(error "The tool $(exec) cannot be found in PATH")) \
 )
 
-ISTIO_VERSION ?= 1.6.13
+ISTIO_VERSION ?= 1.9.0
+ISTIO_NAMESPACE ?= istio-system
+KUBECONTEXT ?= $(shell kubectl config current-context)
 
-all: generate-istio-manifests
-
-.PHONY: get-istio generate-istio-manifests
+.PHONY: get-istio install-istio uninstall-istio purge
 
 get-istio: .download/istio-$(ISTIO_VERSION)/
 .download/istio-$(ISTIO_VERSION)/:
@@ -17,8 +17,23 @@ get-istio: .download/istio-$(ISTIO_VERSION)/
 	  | ISTIO_VERSION="$(ISTIO_VERSION)" sh -
 	@echo "Done !"
 
-ISTIOCTL := $(shell pwd)/.download/istio-$(ISTIO_VERSION)/bin/istioctl
+ISTIOCTL := $(realpath .download)/istio-$(ISTIO_VERSION)/bin/istioctl
 
-generate-istio-manifests: installation-manifests/Base
-installation-manifests/Base: istio-operator.yaml .download/istio-$(ISTIO_VERSION)/
-	$(ISTIOCTL) manifest generate --filename "$<" --output '$(dir $(dir $@))'
+
+install-istio: k8s-manifests/istio-operator.yaml
+	@echo "RUNNING TARGET <$@>"
+	$(ISTIOCTL) --context=$(KUBECONTEXT) install \
+	  --skip-confirmation \
+	  --filename $< \
+	  --set namespace=$(ISTIO_NAMESPACE)
+
+
+uninstall-istio: k8s-manifests/istio-operator.yaml
+	@echo "RUNNING TARGET <$@>"
+	$(ISTIOCTL) manifest generate --filename $< --set namespace=$(ISTIO_NAMESPACE) \
+	  | kubectl --context=$(KUBECONTEXT) delete --ignore-not-found=true -f - \
+	  && kubectl delete namespace $(ISTIO_NAMESPACE)
+
+
+purge:
+	rm -rf .download/
