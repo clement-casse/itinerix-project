@@ -1,0 +1,147 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adservice
+spec:
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cartservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emailservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalogservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendationservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shippingservice
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+      - name: server
+        resources:
+          $patch: delete

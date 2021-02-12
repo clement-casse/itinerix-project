@@ -28,7 +28,7 @@ module "service_mesh" {
     region       = var.gke_region
     cluster_name = var.gke_cluster_name
 
-    istio_version   = "1.8.3"
+    istio_version   = "1.9.0"
     istio_namespace = "istio-system"
     # dashboard_users            = var.dashboard_users
 }
@@ -62,6 +62,23 @@ module "cert-manager" {
     certificates_to_create = module.domain.dns_records
 }
 
+module "stack-tracing" {
+    source = "../modules/stack-tracing"
+
+    project      = var.gke_project
+    region       = var.gke_region
+    cluster_name = var.gke_cluster_name
+
+    k8s_host                   = module.cluster.host
+    k8s_token                  = data.google_client_config.current.access_token
+    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+
+    jaeger_install_ns = "istio-system"
+    jaeger_host       = "monitoring.${var.acme_domain}"
+    jaeger_pathprefix = "/jaeger"
+    jaeger_users      = var.dashboard_users
+}
+
 # module "prometheus_operator" {
 #     source = "../modules/operator-prometheus"
 #
@@ -80,17 +97,6 @@ module "cert-manager" {
 #     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 # }
 
-# module "stack-tracing" {
-#     source = "../modules/stack-tracing"
-# 
-#     k8s_host                   = module.cluster.host
-#     k8s_token                  = data.google_client_config.current.access_token
-#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
-# 
-#     domain_name  = var.acme_domain
-#     jaeger_users = var.dashboard_users
-# }
-
 # module "stack-data" {
 #     source = "../modules/stack-data"
 # 
@@ -102,12 +108,12 @@ module "cert-manager" {
 #     notebook_users = var.dashboard_users
 # }
 
-# module "prepare-stack-app" {
-#     source = "../modules/prepare-stack-app"
+module "prepare-stack-app" {
+    source = "../modules/prepare-stack-app"
 
-#     k8s_host                   = module.cluster.host
-#     k8s_token                  = data.google_client_config.current.access_token
-#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+    k8s_host                   = module.cluster.host
+    k8s_token                  = data.google_client_config.current.access_token
+    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
-#     domain_name    = var.acme_domain
-# }
+    domain_name = var.acme_domain
+}
