@@ -4,6 +4,10 @@ kind: Kustomization
 commonLabels:
   experimentation: microservices-demo
 
+# configMapGenerator:
+# - name: otel-agent-config
+#   files:
+#   - opentelemetry/config.yaml
 
 resources:
 - ./microservices-demo/kubernetes-manifests/adservice.yaml
@@ -22,6 +26,7 @@ resources:
 patchesStrategicMerge:
 - remove-loadbalancer.yaml
 - tune-loadgenerator.yaml
+# - manually-inject-jaeger-agent.yaml
 
 images:
 - name: emailservice

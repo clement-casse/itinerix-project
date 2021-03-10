@@ -43,7 +43,7 @@ module "domain" {
     domain           = var.acme_domain
 }
 
-module "cert-manager" {
+module "cert_manager" {
     source = "../modules/cert-manager"
 
     project      = var.gke_project
@@ -54,15 +54,15 @@ module "cert-manager" {
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
-    certmanager_version = "v1.1.0"
+    certmanager_version = "v1.2.0"
     acme_email          = var.acme_email
     domain_name         = var.acme_domain
 
-    certificates_target_ns = "istio-system"
+    certificates_target_ns = module.service_mesh.namespace
     certificates_to_create = module.domain.dns_records
 }
 
-module "stack-tracing" {
+module "stack_tracing" {
     source = "../modules/stack-tracing"
 
     project      = var.gke_project
@@ -73,7 +73,7 @@ module "stack-tracing" {
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
-    jaeger_install_ns = "istio-system"
+    jaeger_install_ns = module.service_mesh.namespace
     jaeger_host       = "monitoring.${var.acme_domain}"
     jaeger_pathprefix = "/jaeger"
     jaeger_users      = var.dashboard_users
@@ -108,7 +108,7 @@ module "stack-tracing" {
 #     notebook_users = var.dashboard_users
 # }
 
-module "prepare-stack-app" {
+module "prepare_stack_app" {
     source = "../modules/prepare-stack-app"
 
     k8s_host                   = module.cluster.host

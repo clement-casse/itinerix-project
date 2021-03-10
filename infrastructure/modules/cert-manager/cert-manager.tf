@@ -43,12 +43,20 @@ resource "null_resource" "cert_manager" {
   }
 }
 
+data "kubernetes_namespace" "cert_manager_ns" {
+  metadata {
+    name = "cert-manager"
+  }
+
+  depends_on = [ null_resource.cert_manager ]
+}
+
 ## Create a K8S secret for Operations on DNS performed by certmanager/ACME with DNS01 challenge
 #  TODO Switch to Workload Identity instead of JSON key from Service account
 resource "kubernetes_secret" "dns01sover_credentials" {
   metadata {
     name = "clouddns-dns01-solver-svc-acct"
-    namespace = "cert-manager"
+    namespace = data.kubernetes_namespace.cert_manager_ns.metadata.0.name
   }
   data = {
     "key.json" = base64decode(google_service_account_key.dns01_service_account_key.private_key)
@@ -104,6 +112,11 @@ resource "kubectl_manifest" "cert_manager_acme_clusterissuers" {
   EOF
 }
 
+data "kubernetes_namespace" "target_ns" {
+  metadata {
+    name = var.certificates_target_ns
+  }
+}
 
 resource "kubectl_manifest" "certificate" {
   for_each = toset(var.certificates_to_create)
@@ -113,7 +126,7 @@ resource "kubectl_manifest" "certificate" {
   kind: Certificate
   metadata:
     name: ${split(".", each.key).0}-ingress-cert
-    namespace: istio-system
+    namespace: ${data.kubernetes_namespace.target_ns.metadata.0.name}
   spec:
     secretName: ${split(".", each.key).0}-ingress-cert
     commonName: "${each.key}"

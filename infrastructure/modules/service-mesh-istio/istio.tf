@@ -1,3 +1,8 @@
+resource "kubernetes_namespace" "istio_ns" {
+  metadata {
+    name = var.istio_namespace
+  }
+}
 resource "null_resource" "istio_service_mesh" {
   triggers = {
     istio_version           = var.istio_version
@@ -30,13 +35,13 @@ data "kubernetes_namespace" "istio_ns" {
     name = var.istio_namespace
   }
 
-  depends_on = [ null_resource.istio_service_mesh ]
+  depends_on = [ null_resource.istio_service_mesh, kubernetes_namespace.istio_ns ]
 }
 
 data "kubernetes_service" "istio_ingressgateway" {
   metadata {
     name      = "istio-ingressgateway"
-    namespace = var.istio_namespace
+    namespace = data.kubernetes_namespace.istio_ns.metadata.0.name
   }
 
   depends_on = [ null_resource.istio_service_mesh ]

@@ -63,9 +63,9 @@ resource "kubernetes_cluster_role_binding" "node_reader" {
   }
 }
 
+
 resource "kubectl_manifest" "service_local_otel_agent" {
   yaml_body = <<-EOF
-  ---
   apiVersion: v1
   kind: Service
   metadata:
@@ -77,7 +77,7 @@ resource "kubectl_manifest" "service_local_otel_agent" {
     ports:
     - name: http-zipkin
       port: 9411
-    - name: http-grpc
+    - name: grpc-jaeger
       port: 14250
     - name: c-tchan-trft
       port: 14267
@@ -164,6 +164,11 @@ resource "kubernetes_daemonset" "otel_agent" {
             name           = "jg-binary-trft"
             container_port = 6832
             protocol       = "UDP"
+          }
+          port {
+            name           = "http-zipkin"
+            container_port = 9411
+            protocol       = "TCP"
           }
           port {
             name           = "http-traces"
@@ -273,6 +278,11 @@ resource "kubernetes_config_map" "otel_config" {
       batch:
         timeout: 5s
         send_batch_size: 128
+
+      span:
+        exclude:
+          match_type: regexp
+          span_names: [ "jaeger-query.istio-system.svc.cluster.local:16686/jaeger"]
 
       resource:
         attributes:

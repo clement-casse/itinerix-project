@@ -17,6 +17,16 @@ spec:
         openCensusAgent:
           address: dns:///otel-fwd.istio-system.svc.cluster.local:55678
           context: [ "W3C_TRACE_CONTEXT", "B3", "GRPC_BIN" ]
+        custom_tags:
+          resource.k8s.namespace.name:
+            environment:
+              name: POD_NAMESPACE
+          resource.k8s.pod.name:
+            environment:
+              name: POD_NAME
+          resource.k8s.pod.ip:
+            environment:
+              name: INSTANCE_IP
       sds:
         enabled: true
 

@@ -35,5 +35,29 @@ uninstall-istio: k8s-manifests/istio-operator.yaml
 	  && kubectl delete namespace $(ISTIO_NAMESPACE)
 
 
+.download/istio-remote-config/inject-config.yaml:
+	@mkdir -p $(dir $@)
+	kubectl -n $(ISTIO_NAMESPACE) get configmap istio-sidecar-injector -o=jsonpath='{.data.config}' > $@
+
+.download/istio-remote-config/inject-values.yaml:
+	@mkdir -p $(dir $@)
+	kubectl -n $(ISTIO_NAMESPACE) get configmap istio-sidecar-injector -o=jsonpath='{.data.values}' > $@
+
+.download/istio-remote-config/mesh-config.yaml:
+	@mkdir -p $(dir $@)
+	kubectl -n $(ISTIO_NAMESPACE) get configmap istio -o=jsonpath='{.data.mesh}' > $@
+
+
+manually-inject: .download/istio-remote-config/inject-config.yaml \
+				 .download/istio-remote-config/inject-values.yaml \
+				 .download/istio-remote-config/mesh-config.yaml
+	kustomize build ../../../kustomizations/app/overlays/on-all-nodes \
+	| $(ISTIOCTL) kube-inject \
+      --injectConfigFile .download/istio-remote-config/inject-config.yaml \
+      --meshConfigFile .download/istio-remote-config/mesh-config.yaml \
+      --valuesFile .download/istio-remote-config/inject-values.yaml \
+      --filename - \
+	| kubectl apply -n app -f -
+
 purge:
 	rm -rf .download/
