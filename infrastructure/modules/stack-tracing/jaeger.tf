@@ -350,6 +350,16 @@ resource "kubectl_manifest" "monitoring_ingress_cfg" {
         number: 80
         name: http
         protocol: HTTP
+      tls:
+        httpsRedirect: true
+    - hosts: [ "${var.jaeger_host}" ]
+      port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: monitoring-ingress-cert
   ---
   apiVersion: networking.istio.io/v1alpha3
   kind: VirtualService
