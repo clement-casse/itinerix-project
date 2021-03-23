@@ -133,7 +133,7 @@ resource "kubectl_manifest" "certificate" {
     dnsNames:
     - "${each.key}"
     issuerRef:
-      name: letsencrypt-staging
+      name: letsencrypt-prod
       kind: ClusterIssuer
   EOF
 }
