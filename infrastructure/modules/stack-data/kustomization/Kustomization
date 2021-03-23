@@ -4,8 +4,8 @@ kind: Kustomization
 namespace: data
 
 bases:
-- https://github.com/clement-casse/itinerix-project/kustomizations/data/polynote/base
-- https://github.com/clement-casse/itinerix-project/kustomizations/data/neo4j/base
+- ../../../../kustomizations/data/polynote/base
+- ../../../../kustomizations/data/neo4j/base
 
 configMapGenerator:
 - name: polynote-config-file

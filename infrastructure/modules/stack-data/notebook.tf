@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "data_ns" {
   metadata {
-    name = "data"
+    name = var.notebook_install_ns
     annotations = {
       "linkerd.io/inject" = "disabled"
     }
@@ -10,77 +10,85 @@ resource "kubernetes_namespace" "data_ns" {
   }
 }
 
-data "kubectl_file_documents" "data_manifests" {
-  content = file("${path.module}/generated-manifests/notebook.yaml")
+resource "null_resource" "polynote_neo4j_kustomization" {
+  provisioner "local-exec" {
+    command     = <<-SCRIPT
+      kustomize build ./kustomization \
+      | kubectl apply --namespace=$JAEGER_NAMESPACE --context=$CONTEXT --filename -
+    SCRIPT
+    working_dir = path.module
+
+    environment = {
+      DATA_NAMESPACE = kubernetes_namespace.data_ns.metadata.0.name
+      CONTEXT        = "gke_${var.project}_${var.region}_${var.cluster_name}"
+    }
+  }
 }
 
-resource "kubectl_manifest" "notebook" {
-  count     = length(data.kubectl_file_documents.data_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.data_manifests.documents, count.index)
-
-  depends_on = [kubernetes_namespace.data_ns]
-}
-
-
-resource "kubernetes_secret" "notebook_auth" {
+data "kubernetes_service" "polynote_endpoint" {
   metadata {
-    name      = "notebook-basic-auth"
+    name      = "polynote"
     namespace = kubernetes_namespace.data_ns.metadata.0.name
   }
 
-  data = {
-    users = var.notebook_users
-  }
+  depends_on = [ null_resource.polynote_neo4j_kustomization ]
 }
 
 
 ###
-### LINKERD + TRAEFIK SPECIFIC FOR INGRESS TRAFFIC
+### ISTIO SPECIFIC FOR INGRESS TRAFFIC
 ###
-
-resource "kubectl_manifest" "notebook_ingress_cfg" {
+resource "kubectl_manifest" "data_ingress_gateway" {
   yaml_body = <<-EOF
-  ---
-  apiVersion: traefik.containo.us/v1alpha1
-  kind: Middleware
+  apiVersion: networking.istio.io/v1alpha3
+  kind: Gateway
   metadata:
-    name: notebook-auth
+    name: data-gateway
     namespace: ${kubernetes_namespace.data_ns.metadata.0.name}
   spec:
-    basicAuth:
-      secret: ${kubernetes_secret.notebook_auth.metadata.0.name}
-  ---
-  apiVersion: traefik.containo.us/v1alpha1
-  kind: Middleware
+    selector:
+      istio: ingressgateway
+    servers:
+    - hosts: [ "${var.notebook_host}" ]
+      port:
+        number: 80
+        name: http
+        protocol: HTTP
+      tls:
+        httpsRedirect: true
+    - hosts: [ "${var.notebook_host}" ]
+      port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      tls:
+        mode: SIMPLE
+        credentialName: grapher-ingress-cert
+  EOF
+}
+
+resource "kubectl_manifest" "data_notebook_virtual_service" {
+  yaml_body = <<-EOF
+  apiVersion: networking.istio.io/v1alpha3
+  kind: VirtualService
   metadata:
-    name: polynote-strip-prefix
+    name: polynote-ingress
     namespace: ${kubernetes_namespace.data_ns.metadata.0.name}
   spec:
-    stripPrefix:
-      prefixes:
-      - "/notebooks"
-      forceSlash: true
-  ---
-  apiVersion: traefik.containo.us/v1alpha1
-  kind: IngressRoute
-  metadata:
-    name: notebook
-    namespace: ${kubernetes_namespace.data_ns.metadata.0.name}
-  spec:
-    entryPoints:
-    - http
-    - https
-    routes:
-    - kind: Rule
-      match: Host(`grapher.${var.domain_name}`) && PathPrefix(`/notebooks/`)
-      services:
-      - name: polynote
-        kind: Service
-        port: 8192
-      middlewares:
-      - name: notebook-auth
-      - name: polynote-strip-prefix
-    tls:
-      certResolver: default
+    hosts: [ "${var.notebook_host}" ]
+    gateways:
+    - data-gateway
+    http:
+    - name: polynote-route
+      match:
+      - uri:
+          prefix: "${var.notebook_pathprefix}"
+      rewrite:
+        uri: /
+      route:
+      - destination:
+          host: polynote
+          port:
+            number: 8192
   EOF
 }
