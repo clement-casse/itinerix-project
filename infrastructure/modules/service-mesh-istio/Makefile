@@ -3,7 +3,7 @@ CAN_RUN := $(foreach exec,$(REQUIRED_EXECUTABLES), \
 	$(if $(shell which $(exec)), "$(exec) found", $(error "The tool $(exec) cannot be found in PATH")) \
 )
 
-ISTIO_VERSION ?= 1.9.0
+ISTIO_VERSION ?= 1.9.1
 ISTIO_NAMESPACE ?= istio-system
 KUBECONTEXT ?= $(shell kubectl config current-context)
 

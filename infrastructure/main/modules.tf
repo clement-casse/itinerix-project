@@ -28,7 +28,7 @@ module "service_mesh" {
     region       = var.gke_region
     cluster_name = var.gke_cluster_name
 
-    istio_version   = "1.9.0"
+    istio_version   = "1.9.1"
     istio_namespace = "istio-system"
     # dashboard_users            = var.dashboard_users
 }
@@ -97,16 +97,22 @@ module "stack_tracing" {
 #     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 # }
 
-# module "stack-data" {
-#     source = "../modules/stack-data"
-# 
-#     k8s_host                   = module.cluster.host
-#     k8s_token                  = data.google_client_config.current.access_token
-#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
-# 
-#     domain_name    = var.acme_domain
-#     notebook_users = var.dashboard_users
-# }
+module "stack-data" {
+    source = "../modules/stack-data"
+
+    project      = var.gke_project
+    region       = var.gke_region
+    cluster_name = var.gke_cluster_name
+
+    k8s_host                   = module.cluster.host
+    k8s_token                  = data.google_client_config.current.access_token
+    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+
+    notebook_install_ns = "data"
+    notebook_host       = "grapher.${var.acme_domain}"
+    notebook_pathprefix = "/notebooks/"
+    notebook_users      = var.dashboard_users
+}
 
 module "prepare_stack_app" {
     source = "../modules/prepare-stack-app"
