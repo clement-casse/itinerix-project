@@ -8,6 +8,9 @@ spec:
     spec:
       containers:
       - name: server
+        env:
+        - name: JAEGER_SERVICE_ADDR
+          value: "otel-fwd.istio-system.svc.cluster.local:14268"
         resources:
           $patch: delete
 

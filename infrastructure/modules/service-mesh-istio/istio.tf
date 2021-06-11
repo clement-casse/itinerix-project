@@ -3,6 +3,7 @@ resource "kubernetes_namespace" "istio_ns" {
     name = var.istio_namespace
   }
 }
+
 resource "null_resource" "istio_service_mesh" {
   triggers = {
     istio_version           = var.istio_version

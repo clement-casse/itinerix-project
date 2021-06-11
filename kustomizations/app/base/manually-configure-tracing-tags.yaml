@@ -1,0 +1,240 @@
+##
+##
+##
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: JAEGER_SERVICE_ADDR
+          value: "otel-fwd.istio-system.svc.cluster.local:14268"
+        # - name: DISABLE_STATS
+        #   value: "1"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cartservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+    spec:
+      containers:
+      - name: server
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: checkoutservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: JAEGER_SERVICE_ADDR
+          value: "otel-fwd.istio-system.svc.cluster.local:14268"
+        # - name: DISABLE_STATS
+        #   value: "1"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: currencyservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: DISABLE_PROFILER
+          value: "1"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+        # - name: DISABLE_DEBUGGER
+        #   value: "1"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emailservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: DISABLE_PROFILER
+          value: "1"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: ENV_PLATFORM
+          value: gcp
+        - name: JAEGER_SERVICE_ADDR
+          value: "otel-fwd.istio-system.svc.cluster.local:14268"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+        - name: DISABLE_PROFILER
+          value: "1"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paymentservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+
+    spec:
+      containers:
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: productcatalogservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: JAEGER_SERVICE_ADDR
+          value: "otel-fwd.istio-system.svc.cluster.local:14268"
+        # - name: DISABLE_STATS
+        #   value: "1"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+        - name: DISABLE_PROFILER
+          value: "1"
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recommendationservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: DISABLE_PROFILER
+          value: "1"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+        # - name: DISABLE_DEBUGGER
+        #   value: "1"
+
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shippingservice
+  annotations:
+    linkerd.io/inject: enabled
+spec:
+  template:
+    metadata:
+      proxy.istio.io/config: |
+        tracing:
+          sampling: 100
+
+    spec:
+      containers:
+      - name: server
+        env:
+        - name: JAEGER_SERVICE_ADDR
+          value: "otel-fwd.istio-system.svc.cluster.local:14268"
+        # - name: DISABLE_STATS
+        #   value: "1"
+        # - name: DISABLE_TRACING
+        #   value: "1"
+        - name: DISABLE_PROFILER
+          value: "1"

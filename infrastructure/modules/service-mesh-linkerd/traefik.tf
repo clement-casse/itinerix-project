@@ -46,7 +46,6 @@ resource "kubectl_manifest" "traefik_crds" {
   kind: CustomResourceDefinition
   metadata:
     name: ingressroutes.traefik.containo.us
-
   spec:
     version: v1alpha1
     group: traefik.containo.us
@@ -55,13 +54,11 @@ resource "kubectl_manifest" "traefik_crds" {
       kind: IngressRoute
       plural: ingressroutes
       singular: ingressroute
-
   ---
   apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
     name: middlewares.traefik.containo.us
-
   spec:
     version: v1alpha1
     group: traefik.containo.us
@@ -70,13 +67,11 @@ resource "kubectl_manifest" "traefik_crds" {
       kind: Middleware
       plural: middlewares
       singular: middleware
-
   ---
   apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
     name: ingressroutetcps.traefik.containo.us
-
   spec:
     version: v1alpha1
     group: traefik.containo.us
@@ -85,13 +80,11 @@ resource "kubectl_manifest" "traefik_crds" {
       kind: IngressRouteTCP
       plural: ingressroutetcps
       singular: ingressroutetcp
-
   ---
   apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
     name: ingressrouteudps.traefik.containo.us
-
   spec:
     version: v1alpha1
     group: traefik.containo.us
@@ -100,13 +93,11 @@ resource "kubectl_manifest" "traefik_crds" {
       kind: IngressRouteUDP
       plural: ingressrouteudps
       singular: ingressrouteudp
-
   ---
   apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
     name: tlsoptions.traefik.containo.us
-
   spec:
     version: v1alpha1
     group: traefik.containo.us
@@ -115,13 +106,11 @@ resource "kubectl_manifest" "traefik_crds" {
       kind: TLSOption
       plural: tlsoptions
       singular: tlsoption
-
   ---
   apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
     name: tlsstores.traefik.containo.us
-
   spec:
     version: v1alpha1
     group: traefik.containo.us
@@ -130,13 +119,11 @@ resource "kubectl_manifest" "traefik_crds" {
       kind: TLSStore
       plural: tlsstores
       singular: tlsstore
-
   ---
   apiVersion: apiextensions.k8s.io/v1beta1
   kind: CustomResourceDefinition
   metadata:
     name: traefikservices.traefik.containo.us
-
   spec:
     version: v1alpha1
     group: traefik.containo.us
@@ -145,6 +132,19 @@ resource "kubectl_manifest" "traefik_crds" {
       kind: TraefikService
       plural: traefikservices
       singular: traefikservice
+  ---
+  apiVersion: apiextensions.k8s.io/v1beta1
+  kind: CustomResourceDefinition
+  metadata:
+    name: serverstransports.traefik.containo.us
+  spec:
+    group: traefik.containo.us
+    version: v1alpha1
+    names:
+      kind: ServersTransport
+      plural: serverstransports
+      singular: serverstransport
+    scope: Namespaced
   YAML
 }
 
@@ -220,10 +220,8 @@ resource "kubernetes_config_map" "traefik_config" {
 
       [entryPoints.https]
         address = ":4443"
-    %{ if var.acme_email != "" ~}
         [entryPoints.https.http.tls]
           certResolver = "default"
-    %{ endif ~}
 
       [entryPoints.traefik-internal]
         address = ":9000"
@@ -236,18 +234,10 @@ resource "kubernetes_config_map" "traefik_config" {
     
     [api]
       dashboard = true
-    
-    %{ if var.acme_email != "" ~}
-    [certificatesResolvers.default.acme]
-      email = "${var.acme_email}"
-      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
-      storage = "/tmp/acme.json"
-      [certificatesResolvers.default.acme.tlsChallenge]
-    %{ endif ~}
 
     [metrics]
       [metrics.prometheus]
-        buckets = [0.1,0.3,1.2,5.0]
+        buckets = [0.1, 0.3, 1.2, 5.0]
         entrypoint = "traefik-internal"
     
     [tracing]
@@ -331,7 +321,7 @@ resource "kubernetes_config_map" "otel_config" {
 
     exporters:
       jaeger:
-        endpoint: jaeger-collector.monitoring.svc.cluster.local:14250
+        endpoint: jaeger-collector.${var.tracing_namespace}.svc.cluster.local:14250
 
     service:
       pipelines:
@@ -365,28 +355,9 @@ resource "kubectl_manifest" "traefik_deploy" {
         serviceAccountName: traefik
         securityContext:
           fsGroup: 65532
-        initContainers:
-        - name: init-acme
-          image: busybox
-          volumeMounts:
-          - mountPath: /tmp/
-            name: acme-storage
-          command:
-          - sh
-          - -c
-          - >-
-            set -x;
-            if [ ! -f "/tmp/acme.json" ]; then
-              echo '{}' > /tmp/acme.json;
-              chmod 0600 /tmp/acme.json;
-            fi;
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 65532
-            runAsGroup: 65532
         containers:
         - name: traefik
-          image: traefik:v2.3
+          image: traefik:v2.4
           ports:
           - containerPort: 8000
             name: http
@@ -397,9 +368,6 @@ resource "kubectl_manifest" "traefik_deploy" {
           - containerPort: 7687
             name: http-bolt
           volumeMounts:
-          - mountPath: /tmp/acme.json
-            name: acme-storage
-            subPath: acme.json
           - mountPath: /etc/traefik/traefik.toml
             name: traefik-config-volume
             subPath: traefik.toml
@@ -503,8 +471,6 @@ resource "kubectl_manifest" "traefik_deploy" {
               cpu: 50m
               memory: 100Mi
         volumes:
-        - name: acme-storage
-          emptyDir: {}
         - name: traefik-config-volume
           configMap:
             name: ${kubernetes_config_map.traefik_config.metadata.0.name}
@@ -516,48 +482,3 @@ resource "kubectl_manifest" "traefik_deploy" {
   EOF
 }
 
-resource "kubernetes_secret" "traefik_dashboard_auth" {
-  metadata {
-    name      = "traefik-dashboard-basic-auth"
-    namespace = kubernetes_namespace.traefik_ns.metadata.0.name
-  }
-
-  data = {
-    users = var.dashboard_users
-  }
-}
-
-resource "kubectl_manifest" "traefik_dashboard" {
-  yaml_body = <<-EOF
-  ---
-  apiVersion: traefik.containo.us/v1alpha1
-  kind: Middleware
-  metadata:
-    name: traefik-dashboard-auth
-    namespace: ${kubernetes_namespace.traefik_ns.metadata.0.name}
-  spec:
-    basicAuth:
-      secret: ${kubernetes_secret.traefik_dashboard_auth.metadata.0.name}
-  
-  ---
-  apiVersion: traefik.containo.us/v1alpha1
-  kind: IngressRoute
-  metadata:
-    name: traefik-dashboard
-    namespace: ${kubernetes_namespace.traefik_ns.metadata.0.name}
-  spec:
-    entryPoints:
-    - http
-    - https
-    routes:
-    - kind: Rule
-      match: Host(`monitoring.${var.domain_name}`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
-      services:
-      - name: api@internal
-        kind: TraefikService
-      middlewares:
-      - name: traefik-dashboard-auth
-    tls:
-      certResolver: default
-  EOF
-}

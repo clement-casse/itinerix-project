@@ -9,9 +9,9 @@ spec:
     spec:
       containers:
       - name: neo4j
-        env:
-        - name: NEO4J_dbms_connector_bolt_advertised__address
-          value: $(ADVERTISED_HOST):7687
+        # env:
+        # - name: NEO4J_dbms_connector_bolt_advertised__address
+        #   value: $(ADVERTISED_HOST):7687
         volumeMounts:
         - name: neo4j-data-volume
           mountPath: /data

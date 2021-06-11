@@ -1,40 +1,85 @@
-resource "kubernetes_namespace" "linkerd_ns" {
-  metadata {
-    name = "linkerd"
-    annotations = {
-      "linkerd.io/inject" = "disabled"
-    }
+resource "null_resource" "linkerd_service_mesh_clusterwide" {
+  triggers = {
+    linkerd_version = var.linkerd_version
+  }
 
-    labels = {
-      istio-injection = "disabled"
-
-      "config.linkerd.io/admission-webhooks" = "disabled"
-      "linkerd.io/control-plane-ns"          = "linkerd"
-      "linkerd.io/is-control-plane"          = "true"
+  provisioner "local-exec" {
+    command     = "gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION"
+    environment = {
+      CLUSTER_NAME = var.cluster_name
+      REGION       = var.region
     }
   }
+
+  provisioner "local-exec" {
+    command     = "make install-linkerd-clusterwide-config KUBECONTEXT=$CONTEXT LINKERD2_VERSION=$LINKERD_VERSION LINKERD2_NS=$LINKERD_NAMESPACE"
+    working_dir = path.module
+
+    environment = {
+      LINKERD_VERSION   = var.linkerd_version
+      LINKERD_NAMESPACE = var.linkerd_namespace
+      CONTEXT           = "gke_${var.project}_${var.region}_${var.cluster_name}"
+    }
+  }
+
+  # provisioner "local-exec" {
+  #   when        = destroy
+  #   command     = "make remove-linkerd-clusterwide-config KUBECONTEXT=$CONTEXT LINKERD2_VERSION=$LINKERD_VERSION LINKERD2_NS=$LINKERD_NAMESPACE"
+  #   working_dir = path.module
+
+  #   environment = {
+  #     LINKERD_VERSION   = var.linkerd_version
+  #     LINKERD_NAMESPACE = var.linkerd_namespace
+  #     CONTEXT           = "gke_${var.project}_${var.region}_${var.cluster_name}"
+  #   }
+  # }
 }
 
 
-data "kubectl_file_documents" "linkerd_config_manifests" {
-  content = file("${path.module}/generated-manifests/linkerd-config.yaml")
+resource "null_resource" "linkerd_service_mesh" {
+  triggers = {
+    linkerd_version = var.linkerd_version
+  }
+
+  depends_on = [ null_resource.linkerd_service_mesh_clusterwide ]
+
+  provisioner "local-exec" {
+    command     = "gcloud container clusters get-credentials $CLUSTER_NAME --region $REGION"
+    environment = {
+      CLUSTER_NAME = var.cluster_name
+      REGION       = var.region
+    }
+  }
+
+  provisioner "local-exec" {
+    command     = "make install-linkerd KUBECONTEXT=$CONTEXT LINKERD2_VERSION=$LINKERD_VERSION LINKERD2_NS=$LINKERD_NAMESPACE"
+    working_dir = path.module
+
+    environment = {
+      LINKERD_VERSION   = var.linkerd_version
+      LINKERD_NAMESPACE = var.linkerd_namespace
+      CONTEXT           = "gke_${var.project}_${var.region}_${var.cluster_name}"
+    }
+  }
+
+  # provisioner "local-exec" {
+  #   when        = destroy
+  #   command     = "make remove-linkerd KUBECONTEXT=$CONTEXT LINKERD2_VERSION=$LINKERD_VERSION LINKERD2_NS=$LINKERD_NAMESPACE"
+  #   working_dir = path.module
+
+  #   environment = {
+  #     LINKERD_VERSION   = var.linkerd_version
+  #     LINKERD_NAMESPACE = var.linkerd_namespace
+  #     CONTEXT           = "gke_${var.project}_${var.region}_${var.cluster_name}"
+  #   }
+  # }
 }
 
-data "kubectl_file_documents" "linkerd_controlplane_manifests" {
-  content = file("${path.module}/generated-manifests/linkerd-controlplane.yaml")
-}
 
+data "kubernetes_namespace" "linkerd_ns" {
+  metadata {
+    name = var.linkerd_namespace
+  }
 
-resource "kubectl_manifest" "linkerd_config" {
-  count     = length(data.kubectl_file_documents.linkerd_config_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.linkerd_config_manifests.documents, count.index)
-
-  depends_on = [kubernetes_namespace.linkerd_ns]
-}
-
-resource "kubectl_manifest" "linkerd_controlplane" {
-  count     = length(data.kubectl_file_documents.linkerd_controlplane_manifests.documents)
-  yaml_body = element(data.kubectl_file_documents.linkerd_controlplane_manifests.documents, count.index)
-
-  depends_on = [kubectl_manifest.linkerd_config]
+  depends_on = [ null_resource.linkerd_service_mesh ]
 }

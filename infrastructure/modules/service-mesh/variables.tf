@@ -1,3 +1,14 @@
+variable "implementation" {
+    description = "Either 'linkerd' or 'istio'"
+    type        = string
+
+    validation {
+        condition     = contains(["linkerd", "istio"], var.implementation)
+        error_message = "Implementation value not supported. Only supported values for variable 'implementation' of module 'service-mesh' are 'linkerd' or 'istio'."
+    }
+}
+
+// Passthrough variables
 variable "k8s_host" {
   description = ""
   type        = string
@@ -29,20 +40,6 @@ variable "cluster_name" {
   default     = "private-cluster"
 }
 
-
-variable "istio_version" {
-  description = "Version Number of Istio"
-  type        = string
-  default     = "1.9.2"
-}
-
-variable "istio_namespace" {
-  description = "Namespace to install Istio on"
-  type        = string
-  default     = "istio-system"
-}
-
-
 variable "domain_name" {
   description = ""
   type        = string
@@ -59,4 +56,35 @@ variable "polynote_namespace" {
   description = "Namespace in which polynote is installed"
   type        = string
   default     = "data"
+}
+
+// LINKERD VARIABLES
+variable "linkerd_version" {
+    description = "Linkerd version"
+    type        = string
+}
+
+variable "linkerd_namespace" {
+    description = ""
+    type        = string
+}
+
+variable "dashboard_users" {
+  description = ""
+  type        = string
+  default     = <<-EOF
+  user:$apr1$vc.rsten$MtYRDGJKMdgQmmO0X53211
+  admin:$apr1$UvpJMorq$DGC7ohuDc2gNotSzSEhwK1
+  EOF
+}
+
+// ISTIO VARIABLES
+variable "istio_version" {
+    description = "Istio version"
+    type        = string
+}
+
+variable "istio_namespace" {
+    description = ""
+    type        = string
 }

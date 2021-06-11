@@ -17,8 +17,25 @@ module "cluster" {
     cluster_name    = var.gke_cluster_name
 }
 
+module "stack_tracing" {
+    source = "../modules/stack-tracing"
+
+    project      = var.gke_project
+    region       = var.gke_region
+    cluster_name = var.gke_cluster_name
+
+    k8s_host                   = module.cluster.host
+    k8s_token                  = data.google_client_config.current.access_token
+    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+
+    jaeger_install_ns = "monitoring"
+}
+
+
 module "service_mesh" {
-    source = "../modules/service-mesh-istio"
+    source = "../modules/service-mesh"
+
+    implementation = "linkerd"
 
     k8s_host                   = module.cluster.host
     k8s_token                  = data.google_client_config.current.access_token
@@ -28,9 +45,17 @@ module "service_mesh" {
     region       = var.gke_region
     cluster_name = var.gke_cluster_name
 
-    istio_version   = "1.9.1"
+    domain_name        = var.acme_domain
+    tracing_namespace  = "monitoring"
+    polynote_namespace = "data"
+
+    istio_version   = "1.9.4"           # LAST ISTIO VERSION TO DATE
     istio_namespace = "istio-system"
-    # dashboard_users            = var.dashboard_users
+
+    linkerd_version   = "stable-2.10.1" # LAST LINKERD VERSION TO DATE
+    linkerd_namespace = "linkerd"
+
+    dashboard_users    = var.dashboard_users
 }
 
 module "domain" {
@@ -54,29 +79,12 @@ module "cert_manager" {
     k8s_token                  = data.google_client_config.current.access_token
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
-    certmanager_version = "v1.2.0"
+    certmanager_version = "v1.3.1"
     acme_email          = var.acme_email
     domain_name         = var.acme_domain
 
-    certificates_target_ns = module.service_mesh.namespace
+    certificates_target_ns = module.service_mesh.certificate_target_namespace
     certificates_to_create = module.domain.dns_records
-}
-
-module "stack_tracing" {
-    source = "../modules/stack-tracing"
-
-    project      = var.gke_project
-    region       = var.gke_region
-    cluster_name = var.gke_cluster_name
-
-    k8s_host                   = module.cluster.host
-    k8s_token                  = data.google_client_config.current.access_token
-    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
-
-    jaeger_install_ns = module.service_mesh.namespace
-    jaeger_host       = "monitoring.${var.acme_domain}"
-    jaeger_pathprefix = "/jaeger"
-    jaeger_users      = var.dashboard_users
 }
 
 # module "prometheus_operator" {
@@ -87,8 +95,6 @@ module "stack_tracing" {
 #     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 # }
 
-# REMOVING SOME MODULE WITH CRDs & HUGE LOCAL FILES AS THEY MAKE TERRAFORM STATE BE TOO LARGE
-# THEREFORE ANY PLAN IN TERRAFORM FAILS
 # module "strimzi_operator" {
 #     source = "../modules/operator-strimzi"
 # 
@@ -109,17 +115,14 @@ module "stack-data" {
     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
     notebook_install_ns = "data"
-    notebook_host       = "grapher.${var.acme_domain}"
-    notebook_pathprefix = "/notebooks/"
-    notebook_users      = var.dashboard_users
 }
 
-module "prepare_stack_app" {
-    source = "../modules/prepare-stack-app"
+# module "prepare_stack_app" {
+#     source = "../modules/prepare-stack-app"
 
-    k8s_host                   = module.cluster.host
-    k8s_token                  = data.google_client_config.current.access_token
-    k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
+#     k8s_host                   = module.cluster.host
+#     k8s_token                  = data.google_client_config.current.access_token
+#     k8s_cluster_ca_certificate = module.cluster.cluster_ca_certificate
 
-    domain_name = var.acme_domain
-}
+#     domain_name = var.acme_domain
+# }

@@ -3,7 +3,7 @@ CAN_RUN := $(foreach exec,$(REQUIRED_EXECUTABLES), \
 	$(if $(shell which $(exec)), "$(exec) found", $(error "The tool $(exec) cannot be found in PATH")) \
 )
 
-ISTIO_VERSION ?= 1.9.1
+ISTIO_VERSION ?= 1.9.2
 ISTIO_NAMESPACE ?= istio-system
 KUBECONTEXT ?= $(shell kubectl config current-context)
 
@@ -20,7 +20,7 @@ get-istio: .download/istio-$(ISTIO_VERSION)/
 ISTIOCTL := $(realpath .download)/istio-$(ISTIO_VERSION)/bin/istioctl
 
 
-install-istio: k8s-manifests/istio-operator.yaml
+install-istio: k8s-manifests/istio-operator.yaml .download/istio-$(ISTIO_VERSION)/
 	@echo "RUNNING TARGET <$@>"
 	$(ISTIOCTL) --context=$(KUBECONTEXT) install \
 	  --skip-confirmation \

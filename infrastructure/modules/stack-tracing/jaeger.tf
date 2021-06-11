@@ -1,8 +1,22 @@
-data "kubernetes_namespace" "jaeger_ns" {
+resource "kubernetes_namespace" "jaeger_ns" {
   metadata {
     name = var.jaeger_install_ns
+    annotations = {
+      "linkerd.io/inject" = "disabled"
+    }
+    labels = {
+      istio-injection = "disabled"
+    }
   }
 }
+
+# data "kubernetes_namespace" "jaeger_ns" {
+#   metadata {
+#     name = var.jaeger_install_ns
+#   }
+
+#   depends_on = [ kubernetes_namespace.jaeger_namespace ]
+# }
 
 resource "null_resource" "jaeger_otel_kustomization" {
   provisioner "local-exec" {
@@ -13,7 +27,7 @@ resource "null_resource" "jaeger_otel_kustomization" {
     working_dir = path.module
 
     environment = {
-      JAEGER_NAMESPACE = data.kubernetes_namespace.jaeger_ns.metadata.0.name
+      JAEGER_NAMESPACE = kubernetes_namespace.jaeger_ns.metadata.0.name
       CONTEXT          = "gke_${var.project}_${var.region}_${var.cluster_name}"
     }
   }
@@ -23,7 +37,7 @@ resource "null_resource" "jaeger_otel_kustomization" {
 data "kubernetes_service" "jaeger_collector" {
   metadata {
     name      = "jaeger-collector"
-    namespace = data.kubernetes_namespace.jaeger_ns.metadata.0.name
+    namespace = kubernetes_namespace.jaeger_ns.metadata.0.name
   }
 
   depends_on = [ null_resource.jaeger_otel_kustomization ]
@@ -32,7 +46,7 @@ data "kubernetes_service" "jaeger_collector" {
 resource "kubernetes_service_account" "node_reader" {
   metadata {
     name      = "node-reader"
-    namespace = data.kubernetes_namespace.jaeger_ns.metadata.0.name
+    namespace = kubernetes_namespace.jaeger_ns.metadata.0.name
   }
 }
 
@@ -70,7 +84,7 @@ resource "kubectl_manifest" "service_local_otel_agent" {
   kind: Service
   metadata:
     name: otel-fwd
-    namespace: ${data.kubernetes_namespace.jaeger_ns.metadata.0.name}
+    namespace: ${kubernetes_namespace.jaeger_ns.metadata.0.name}
   spec:
     selector:
       component: otel-node-agent
@@ -93,7 +107,7 @@ resource "kubectl_manifest" "service_local_otel_agent" {
 resource "kubernetes_daemonset" "otel_agent" {
   metadata {
     name      = "otel-node-forwarder"
-    namespace = data.kubernetes_namespace.jaeger_ns.metadata.0.name
+    namespace = kubernetes_namespace.jaeger_ns.metadata.0.name
     labels = {
       "component" = "otel-node-agent"
     }
@@ -259,7 +273,7 @@ resource "kubernetes_daemonset" "otel_agent" {
 resource "kubernetes_config_map" "otel_config" {
   metadata {
     name      = "otel-agent-config"
-    namespace = data.kubernetes_namespace.jaeger_ns.metadata.0.name
+    namespace = kubernetes_namespace.jaeger_ns.metadata.0.name
   }
 
   data = {
@@ -318,7 +332,7 @@ resource "kubernetes_config_map" "otel_config" {
 
     exporters:
       jaeger:
-        endpoint: ${data.kubernetes_service.jaeger_collector.metadata.0.name}.${data.kubernetes_namespace.jaeger_ns.metadata.0.name}.svc.cluster.local:14250
+        endpoint: ${data.kubernetes_service.jaeger_collector.metadata.0.name}.${kubernetes_namespace.jaeger_ns.metadata.0.name}.svc.cluster.local:14250
 
     service:
       pipelines:
@@ -328,57 +342,4 @@ resource "kubernetes_config_map" "otel_config" {
           exporters: [jaeger]
     EOF
   }
-}
-
-###
-### ISTIO SPECIFIC FOR INGRESS TRAFFIC
-###
-resource "kubectl_manifest" "monitoring_ingress_cfg" {
-  yaml_body = <<-EOF
-  ---
-  apiVersion: networking.istio.io/v1alpha3
-  kind: Gateway
-  metadata:
-    name: monitoring-gateway
-    namespace: ${data.kubernetes_namespace.jaeger_ns.metadata.0.name}
-  spec:
-    selector:
-      istio: ingressgateway
-    servers:
-    - hosts: [ "${var.jaeger_host}" ]
-      port:
-        number: 80
-        name: http
-        protocol: HTTP
-      tls:
-        httpsRedirect: true
-    - hosts: [ "${var.jaeger_host}" ]
-      port:
-        number: 443
-        name: https
-        protocol: HTTPS
-      tls:
-        mode: SIMPLE
-        credentialName: monitoring-ingress-cert
-  ---
-  apiVersion: networking.istio.io/v1alpha3
-  kind: VirtualService
-  metadata:
-    name: jaeger-ingress
-    namespace: ${data.kubernetes_namespace.jaeger_ns.metadata.0.name}
-  spec:
-    hosts: [ "${var.jaeger_host}" ]
-    gateways:
-    - monitoring-gateway
-    http:
-    - name: jaeger-route
-      match:
-      - uri:
-          prefix: "${var.jaeger_pathprefix}"
-      route:
-      - destination:
-          host: jaeger-query
-          port:
-            number: 16686
-  EOF
 }
